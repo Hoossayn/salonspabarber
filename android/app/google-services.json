@@ -1,0 +1,293 @@
+{
+  "project_info": {
+    "project_number": "885713947085",
+    "firebase_url": "https://salon-and-spa-8abb0.firebaseio.com",
+    "project_id": "salon-and-spa-8abb0",
+    "storage_bucket": "salon-and-spa-8abb0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885713947085:android:4c4d3e5324cbc7b6e9dc84",
+        "android_client_info": {
+          "package_name": "com.silexsecure.barbersapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885713947085-l5ahauaglhvpbm2vfr3jiuojqnjccsk0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.barbersapp",
+            "certificate_hash": "b43cd8904103b83a09156d22af7da6baad7dec38"
+          }
+        },
+        {
+          "client_id": "885713947085-t18t7frmr7qg4ngcs9t5j8fakrk20sq3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.barbersapp",
+            "certificate_hash": "59a74871aa619e3528c34f87a6862b4dff4506f0"
+          }
+        },
+        {
+          "client_id": "885713947085-kfbtuqhghue8asmdcl23o6hk1nd8k82f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.barbersapp",
+            "certificate_hash": "4a997f298ad2cd84bcb2b9356bc9b57c17b5c607"
+          }
+        },
+        {
+          "client_id": "885713947085-juiams3jc0om70p84dco79s4kgr9vbcs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.barbersapp",
+            "certificate_hash": "10bbc265a0fb40447708f285a76b48dbe65702ea"
+          }
+        },
+        {
+          "client_id": "885713947085-8a66g4grdtqf1u0es6gb6mgcpuutt5q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjcS3UAryi2AlJLaLf0NZ4xmHo6k_P7t8"
+        },
+        {
+          "current_key": "AIzaSyAr61gavnuIx9F4shW4NQCuaWTflgstr-U"
+        },
+        {
+          "current_key": "AIzaSyDefQTM0tiieBkB9e6rXcujKKG9cj9VM0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885713947085-1ildnfe4unr86bq9pe3hjapc31bh0mnp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "885713947085-5ufv40rrpudnohr7ohsvrvmsgmkt0t1s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.silexsecure.barbersapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885713947085:android:29ac13da64acde5be9dc84",
+        "android_client_info": {
+          "package_name": "com.silexsecure.salonspa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885713947085-nrqrqe5uj9cbq5cqsorl1k8t03rciqtd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.salonspa",
+            "certificate_hash": "10bbc265a0fb40447708f285a76b48dbe65702ea"
+          }
+        },
+        {
+          "client_id": "885713947085-8a66g4grdtqf1u0es6gb6mgcpuutt5q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjcS3UAryi2AlJLaLf0NZ4xmHo6k_P7t8"
+        },
+        {
+          "current_key": "AIzaSyAr61gavnuIx9F4shW4NQCuaWTflgstr-U"
+        },
+        {
+          "current_key": "AIzaSyDefQTM0tiieBkB9e6rXcujKKG9cj9VM0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885713947085-1ildnfe4unr86bq9pe3hjapc31bh0mnp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "885713947085-5ufv40rrpudnohr7ohsvrvmsgmkt0t1s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.silexsecure.barbersapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885713947085:android:a6573579e40be012e9dc84",
+        "android_client_info": {
+          "package_name": "com.silexsecure.salonspabarber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885713947085-shg7jnip6kodj1uavli3d9hcjvd34vso.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.salonspabarber",
+            "certificate_hash": "91daff4fcc077e5a1b70e11cdbeddbb1fac189ef"
+          }
+        },
+        {
+          "client_id": "885713947085-8a66g4grdtqf1u0es6gb6mgcpuutt5q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjcS3UAryi2AlJLaLf0NZ4xmHo6k_P7t8"
+        },
+        {
+          "current_key": "AIzaSyAr61gavnuIx9F4shW4NQCuaWTflgstr-U"
+        },
+        {
+          "current_key": "AIzaSyDefQTM0tiieBkB9e6rXcujKKG9cj9VM0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885713947085-1ildnfe4unr86bq9pe3hjapc31bh0mnp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "885713947085-5ufv40rrpudnohr7ohsvrvmsgmkt0t1s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.silexsecure.barbersapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885713947085:android:9e18f66dfb688b21e9dc84",
+        "android_client_info": {
+          "package_name": "com.silexsecure.saloon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885713947085-s9n27dclm4kbtmepl65m85g4oqi22u8t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.saloon",
+            "certificate_hash": "4e80a5331f1d9aa163004e9f432d4e318174dc21"
+          }
+        },
+        {
+          "client_id": "885713947085-cdrjl5u2jfuaqkl1jd7bur43ue7du8vb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.saloon",
+            "certificate_hash": "b43cd8904103b83a09156d22af7da6baad7dec38"
+          }
+        },
+        {
+          "client_id": "885713947085-jlv7707s9qlsuj7jikgvh4dcb6n54rht.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.silexsecure.saloon",
+            "certificate_hash": "59a74871aa619e3528c34f87a6862b4dff4506f0"
+          }
+        },
+        {
+          "client_id": "885713947085-8a66g4grdtqf1u0es6gb6mgcpuutt5q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjcS3UAryi2AlJLaLf0NZ4xmHo6k_P7t8"
+        },
+        {
+          "current_key": "AIzaSyAr61gavnuIx9F4shW4NQCuaWTflgstr-U"
+        },
+        {
+          "current_key": "AIzaSyDefQTM0tiieBkB9e6rXcujKKG9cj9VM0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885713947085-1ildnfe4unr86bq9pe3hjapc31bh0mnp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "885713947085-5ufv40rrpudnohr7ohsvrvmsgmkt0t1s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.silexsecure.barbersapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885713947085:android:2035f0cbaa52969ee9dc84",
+        "android_client_info": {
+          "package_name": "com.silexsecure.theCut"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885713947085-8a66g4grdtqf1u0es6gb6mgcpuutt5q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjcS3UAryi2AlJLaLf0NZ4xmHo6k_P7t8"
+        },
+        {
+          "current_key": "AIzaSyAr61gavnuIx9F4shW4NQCuaWTflgstr-U"
+        },
+        {
+          "current_key": "AIzaSyDefQTM0tiieBkB9e6rXcujKKG9cj9VM0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885713947085-1ildnfe4unr86bq9pe3hjapc31bh0mnp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "885713947085-5ufv40rrpudnohr7ohsvrvmsgmkt0t1s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.silexsecure.barbersapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
