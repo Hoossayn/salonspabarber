@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salonspabarber/entity/User.dart';
 import 'package:salonspabarber/helper/pref_manager.dart';
+import 'bookings_detail_page.dart';
 import 'model/bookings.dart';
 
 class MyBookingsPage extends StatefulWidget {
@@ -71,36 +72,44 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                         color: Colors.grey, fontSize: 16),
                   ))
                   : ListView.builder(
-                itemCount: item.length,
-                itemBuilder: (context, index) {
+                  itemCount: item.length,
+                  itemBuilder: (context, index) {
                   Bookings _bookings = item[index];
-                  return ListTile(
-                /*    onTap: () => navigateToBookingsDetails(
-                        context: context, bookings: _bookings),*/
-                    isThreeLine: true,
-                    title: Text(
-                      _bookings != null && _bookings.clientName != null
-                          ? _bookings.clientName
-                          : '',
-                      style: GoogleFonts.roboto(fontSize: 20),
-                    ),
-                    subtitle: RichText(
-                      text: TextSpan(
-                          text: '',
-                          style: GoogleFonts.roboto(
-                              color: Colors.black54, fontSize: 14),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: _bookings != null &&
-                                  _bookings.requestStatus != null
-                                  ? '\n${_bookings.requestStatus}'
-                                  : '',
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      color: Colors.white,
+                      child: ListTile(
+                     onTap: () {
+                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBookingDetails(bookings: _bookings)));
+
+                     },
+                        isThreeLine: true,
+                        title: Text(
+                          _bookings != null && _bookings.clientName != null
+                              ? _bookings.clientName
+                              : '',
+                          style: GoogleFonts.roboto(fontSize: 20),
+                        ),
+                        subtitle: RichText(
+                          text: TextSpan(
+                              text: '',
                               style: GoogleFonts.roboto(
-                                  color: Colors.green, fontSize: 12),
-                            )
-                          ]),
+                                  color: Colors.black54, fontSize: 14),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: _bookings != null &&
+                                      _bookings.requestStatus != null
+                                      ? '\n${_bookings.requestStatus}'
+                                      : '',
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.green, fontSize: 12),
+                                )
+                              ]),
+                        ),
+                        trailing: Icon(Icons.navigate_next),
+                      ),
                     ),
-                    trailing: Icon(Icons.navigate_next),
                   );
                 },
               );

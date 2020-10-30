@@ -9,6 +9,7 @@ import 'package:salonspabarber/ui/main/funding/state/funding_state.dart';
 import 'package:salonspabarber/ui/main/state/main_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/earningHistory/state/earning_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/walletHistory/state/wallet_state.dart';
+import 'package:salonspabarber/ui/splash.dart';
 
 
 void main() {
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget{
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: LoginPage(),
+        home: SplashScreenPage(),
       ),
     );
   }

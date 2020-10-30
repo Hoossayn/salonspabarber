@@ -6,7 +6,7 @@ import 'package:salonspabarber/networking/exceptions.dart';
 import 'package:http/http.dart' as http;
 
 
-class MainHelper{
+class WithdrawHelper{
   Future<dynamic> post({@required String url, Map body}) async {
     var responseJson;
     String _url = '${StringRes.BASE_URL}$url';

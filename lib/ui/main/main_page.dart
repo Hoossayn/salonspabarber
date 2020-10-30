@@ -295,9 +295,7 @@ class _MainPageState extends State<MainPage> {
                                                 child: InkWell(
                                                   onTap: ()  {
                                                     // _validateAndMakeRequest();
-                                                    Navigator.of(context)
-                                                        .push(MaterialPageRoute(builder: (context) => MainPage()));
-
+                                                    _showDialog();
                                                   },
                                                   child: Center(
                                                     child: Text(
@@ -476,5 +474,32 @@ class _MainPageState extends State<MainPage> {
       _loader.hideLoader();
       _logger.d('Error: $err');
     });
+  }
+
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Enter amount you want to withdraw"),
+          content: new TextFormField(
+            decoration: InputDecoration(
+                labelText: 'Enter Amount'
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
