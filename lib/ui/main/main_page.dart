@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,10 @@ import 'package:salonspabarber/helper/base_url.dart';
 import 'package:salonspabarber/helper/pref_manager.dart';
 import 'package:salonspabarber/helper/validation.dart';
 import 'package:salonspabarber/ui/bookings/bookings_page.dart';
+import 'package:salonspabarber/ui/main/custom_dialog.dart';
 import 'package:salonspabarber/ui/main/funding/model/funding.dart';
 import 'package:salonspabarber/ui/main/state/main_state.dart';
+import 'package:salonspabarber/ui/main/withdrawal/state/withdraw_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/paymentHistoryPage.dart';
 import 'package:salonspabarber/ui/profile/profile_page.dart';
 import 'package:salonspabarber/utilities/custom_loader_indicator.dart';
@@ -27,6 +30,8 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
+
+
 class _MainPageState extends State<MainPage> {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -35,8 +40,8 @@ class _MainPageState extends State<MainPage> {
   CustomLoader _loader;
   final Logger _logger = Logger();
   MainState _mainState;
-  var walletBalance ;
-  var earningBalance;
+  var walletBalance = '';
+  var earningBalance = '';
   double _latitude = 0.0, _longitude = 0.0;
   bool _isMapLoading = true;
   Position currentLocation;
@@ -47,6 +52,9 @@ class _MainPageState extends State<MainPage> {
   String txRef = 'rave_flutter-${DateTime.now().toString()}';
   String orderRef = 'rave_flutter-${DateTime.now().toString()}';
   FundingWalletState _fundingWalletState;
+  WithdrawState _withdrawState;
+  TextEditingController _amountController = TextEditingController();
+
 
 
   static const LatLng _center = const LatLng(45.521563, -122.677433);
@@ -67,10 +75,18 @@ class _MainPageState extends State<MainPage> {
 
 
   @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     // TODO: implement initState
     _mainState = Provider.of<MainState>(context, listen:false);
     _fundingWalletState = Provider.of<FundingWalletState>(context, listen: false);
+    _withdrawState = Provider.of<WithdrawState>(context, listen:false);
+
     _loader = CustomLoader(context);
     _getUserDetail();
     _getUserLocation();
@@ -100,18 +116,34 @@ class _MainPageState extends State<MainPage> {
   }
 
   void getMessage() {
+
+
+
+
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
-          print('received message');
-         // setState(() => _message = message["notification"]["body"]);
+          print('received message $message');
+          setState(() {
+            CustomDialogBox(context: context, title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+
+          });
         }, onResume: (Map<String, dynamic> message) async {
+
+          CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
       print('on resume $message');
-     // setState(() => _message = message["notification"]["body"]);
+      setState(() {
+        CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+
+      });
     }, onLaunch: (Map<String, dynamic> message) async {
       print('on launch $message');
-     // setState(() => _message = message["notification"]["body"]);
-    });
+      setState(() => print('on launch $message'));
+    },
+      onBackgroundMessage: myBackgroundMessageHandler);
   }
+
+
+
 
   void _getBalance(){
 
@@ -124,14 +156,14 @@ class _MainPageState extends State<MainPage> {
     _loader.showLoader();
     _mainState.getWalletBalance(url: 'getbarberfirstbal', body: _walletBody).then((walletBal){
 
-      setState(() => walletBalance = walletBal.balance);
+      setState(() => walletBalance = walletBal.balance == null? '0': walletBal.balance);
       print('balance ${walletBal.balance}');
       //_loader.hideLoader();
     });
 
     _mainState.getEarningBalance(url: 'barberbal', body: _earningBody).then((earningBal) {
 
-      setState(() => earningBalance = earningBal.balance);
+      setState(() => earningBalance = earningBal.balance == null ? '0': earningBal.balance);
       _loader.hideLoader();
 
     })   .catchError((error) {
@@ -204,8 +236,8 @@ class _MainPageState extends State<MainPage> {
                                             fontWeight: FontWeight.normal),
                                       ),
                                       SizedBox(height: 5),
-                                      Text(
-                                        currency(context, int.parse(walletBalance.toString())),
+                                      Text('',
+                                        //currency(context, int.parse(walletBalance.toString())),
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'Varela',
@@ -272,8 +304,8 @@ class _MainPageState extends State<MainPage> {
                                             fontWeight: FontWeight.normal),
                                       ),
                                       SizedBox(height: 5),
-                                      Text(
-                                          currency(context, int.parse(earningBalance.toString())),
+                                      Text('',
+                                          //currency(context, int.parse(earningBalance.toString())),
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'Varela',
@@ -476,6 +508,27 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+   _withdraw(BuildContext context) async{
+
+     if (!await DataConnectionChecker().hasConnection) {
+       _logger.d('No internet access!');
+       return;
+     }
+
+    var _map = Map<String, dynamic>();
+    _map['id'] = _user.id.toString();
+    _map['amount'] = _amountController.text.toString();
+
+    _loader.showLoader();
+    _withdrawState.withdraw(url: null, body: _map).then((value) {
+      _loader.hideLoader();
+
+    }).catchError((err) {
+      _loader.hideLoader();
+      _logger.d('Error: $err');
+    });
+
+  }
   void _showDialog() {
     // flutter defined function
     showDialog(
@@ -492,8 +545,15 @@ class _MainPageState extends State<MainPage> {
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Close"),
+              child: new Text("Close", style: TextStyle(color: Colors.red),),
               onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Withdraw",style: TextStyle(color: Colors.green),),
+              onPressed: () {
+                _withdraw(context);
                 Navigator.of(context).pop();
               },
             ),
@@ -501,5 +561,11 @@ class _MainPageState extends State<MainPage> {
         );
       },
     );
+  }
+
+  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async{
+    print('on background $message');
+    return Future<void>.value();
+
   }
 }
