@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -13,16 +15,19 @@ import 'package:rave_flutter/rave_flutter.dart';
 import 'package:salonspabarber/entity/User.dart';
 import 'package:salonspabarber/helper/base_url.dart';
 import 'package:salonspabarber/helper/pref_manager.dart';
+import 'package:salonspabarber/helper/theme.dart';
 import 'package:salonspabarber/helper/validation.dart';
+import 'package:salonspabarber/ui/acceptRequest/accept_request.dart';
 import 'package:salonspabarber/ui/bookings/bookings_page.dart';
 import 'package:salonspabarber/ui/main/custom_dialog.dart';
 import 'package:salonspabarber/ui/main/funding/model/funding.dart';
+import 'package:salonspabarber/ui/main/model/notification_model.dart';
 import 'package:salonspabarber/ui/main/state/main_state.dart';
 import 'package:salonspabarber/ui/main/withdrawal/state/withdraw_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/paymentHistoryPage.dart';
 import 'package:salonspabarber/ui/profile/profile_page.dart';
 import 'package:salonspabarber/utilities/custom_loader_indicator.dart';
-
+import 'package:salonspabarber/utilities/image_loader.dart';
 import 'funding/state/funding_state.dart';
 
 class MainPage extends StatefulWidget {
@@ -54,6 +59,13 @@ class _MainPageState extends State<MainPage> {
   FundingWalletState _fundingWalletState;
   WithdrawState _withdrawState;
   TextEditingController _amountController = TextEditingController();
+  NotificationData notificationModel;
+  final _preManager = SharedPreferencesHelper();
+  DatabaseReference _database = FirebaseDatabase.instance.reference();
+  //AnimationController _controller;
+  String clientId;
+  String requestKey;
+
 
 
 
@@ -118,32 +130,451 @@ class _MainPageState extends State<MainPage> {
   void getMessage() {
 
 
-
-
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
           print('received message $message');
+
+
           setState(() {
-            CustomDialogBox(context: context, title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+           // CustomDialogBox(context: context, title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+            contentBox(context, message["data"]["clientName"],
+                message["data"]["clientAddress"],
+                message["data"]["paymentAmount"], message["data"]["paymentStatus"],
+                message["data"]["noOfMen"], message["data"]["noOfWomen"], message["data"]["noOfChildren"]);
+
+            clientId = message["data"]["clientId"];
+            requestKey = message["data"]["requestKey"];
+
+            _prefManager.setClientId(clientId);
+            _prefManager.setRequestKey(requestKey);
+
+            print('sharedPreference ${clientId}  ${requestKey}');
+
+            notificationModel = NotificationData.checkBeforeSendingToServer(
+              clientName: '${message["data"]["clientName"]}',
+              clientAddress: '${message["data"]["clientAddress"]}',
+              requestKey: '${message["data"]["requestStatus"]}',
+              barberId: '${message["data"]["barberId"]}',
+              barberImageUrl: '${message["data"]["barberImageUrl"]}',
+              barberName: '${message["data"]["barberName"]}',
+              barberNumber: '${message["data"]["barberNumber"]}',
+              requestStatus: '${message["data"]["requestStatus"]}',
+
+            );
 
           });
         }, onResume: (Map<String, dynamic> message) async {
+      contentBox(context, message["data"]["clientName"],
+          message["data"]["clientAddress"],
+          message["data"]["paymentAmount"], message["data"]["paymentStatus"],
+          message["data"]["noOfMen"], message["data"]["noOfWomen"], message["data"]["noOfChildren"]);
 
-          CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+
+         // CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
       print('on resume $message');
       setState(() {
-        CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+        contentBox(context, message["data"]["clientName"],
+            message["data"]["clientAddress"],
+            message["data"]["paymentAmount"], message["data"]["paymentStatus"],
+            message["data"]["noOfMen"], message["data"]["noOfWomen"], message["data"]["noOfChildren"]);
+
+        clientId = message["data"]["clientId"];
+        requestKey = message["data"]["requestKey"];
+
+        _prefManager.setClientId(clientId);
+        _prefManager.setRequestKey(requestKey);
+
+        print('sharedPreference ${clientId}  ${requestKey}');
+
+        notificationModel = NotificationData.checkBeforeSendingToServer(
+          clientName: '${message["data"]["clientName"]}',
+          clientAddress: '${message["data"]["clientAddress"]}',
+          requestKey: '${message["data"]["requestStatus"]}',
+          barberId: '${message["data"]["barberId"]}',
+          barberImageUrl: '${message["data"]["barberImageUrl"]}',
+          barberName: '${message["data"]["barberName"]}',
+          barberNumber: '${message["data"]["barberNumber"]}',
+          requestStatus: '${message["data"]["requestStatus"]}',
+
+        );
 
       });
     }, onLaunch: (Map<String, dynamic> message) async {
       print('on launch $message');
-      setState(() => print('on launch $message'));
+      setState(() {
+        clientId = message["data"]["clientId"];
+        requestKey = message["data"]["requestKey"];
+
+        _prefManager.setClientId(clientId);
+        _prefManager.setRequestKey(requestKey);
+
+        print('sharedPreference ${clientId}  ${requestKey}');
+
+        notificationModel = NotificationData.checkBeforeSendingToServer(
+          clientName: '${message["data"]["clientName"]}',
+          clientAddress: '${message["data"]["clientAddress"]}',
+          requestKey: '${message["data"]["requestStatus"]}',
+          barberId: '${message["data"]["barberId"]}',
+          barberImageUrl: '${message["data"]["barberImageUrl"]}',
+          barberName: '${message["data"]["barberName"]}',
+          barberNumber: '${message["data"]["barberNumber"]}',
+          requestStatus: '${message["data"]["requestStatus"]}',
+
+        );
+
+      });
     },
       onBackgroundMessage: myBackgroundMessageHandler);
   }
 
 
+  contentBox(BuildContext context, String barberName, String address, String paymentMethod, String paymentStatus, String noOfMen, String noOfWomen, String noOfChildren){
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      child: Scaffold(
+        body: Container(
+          child: ListView(
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+              ),
+              Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 32,
+                  ),
+                  Flexible(
+                    child: CircleImage(
+                      path: StringRes.ASSET_DEFAULT_AVATAR,
+                      width: 100.0,
+                      height: 100.0,
+                    ),
+                  ),
+                  Flexible(
+                    child: ListTile(
+                      title: Text('Client Name',
+                          style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              fontStyle: FontStyle.normal,
+                              color: AppColor.darkgrey)),
+                      subtitle: Container(
+                        margin: EdgeInsets.only(top: 10),
+                        decoration: BoxDecoration(
+                            color: AppColor.buttonDarkWhite,
+                            borderRadius: BorderRadius.circular(10)),
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            barberName,
+                            style: GoogleFonts.roboto(
+                                fontSize: 18,
+                                fontStyle: FontStyle.normal,
+                                color: AppColor.textColorPurple),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 32,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              ListTile(
+                title: Text('Address',
+                    style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontStyle: FontStyle.normal,
+                        color: AppColor.darkgrey)),
+                isThreeLine: true,
+                subtitle: Container(
+                  margin: EdgeInsets.only(top: 10),
+                  decoration: BoxDecoration(
+                      color: AppColor.buttonDarkWhite,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      address,
+                      style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontStyle: FontStyle.normal,
+                          color: AppColor.textColorPurple),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 23,
+              ),
+              ListTile(
+                title: Text('Payment',
+                    style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontStyle: FontStyle.normal,
+                        color: AppColor.darkgrey)),
+                isThreeLine: true,
+                subtitle: Container(
+                  margin: EdgeInsets.only(top: 10),
+                  decoration: BoxDecoration(
+                      color: AppColor.buttonDarkWhite,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Cash',
+                              style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.normal,
+                                  color: AppColor.textColorPurple),
+                            ),
+                            Text(paymentMethod
+                              /*bookings != null &&
+                                    bookings.serviceAmount.toString().isNotEmpty
+                                    ? '${currency(context, _convertStringCurrencyToInt(bookings.serviceAmount.toString()))}'
+                                    : '${currency(context, 0)}'*/,
+                              style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.normal,
+                                  color: AppColor.textColorPurple),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 23,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Payment Status',
+                              style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.normal,
+                                  color: AppColor.textColorPurple),
+                            ),
+                            Text(
+                              paymentStatus
+                              /*bookings != null && bookings.paymentStatus.isNotEmpty
+                                    ? bookings.paymentStatus
+                                    : ''*/,
+                              style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.normal,
+                                  color: AppColor.textColorPurple),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 23,
+              ),
+              ListTile(
+                title: Text('Preferred Tools',
+                    style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        fontStyle: FontStyle.normal,
+                        color: AppColor.darkgrey)),
+                isThreeLine: true,
+                subtitle: Container(
+                  margin: EdgeInsets.only(top: 10),
+                  decoration: BoxDecoration(
+                      color: AppColor.buttonDarkWhite,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '',
+                      style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontStyle: FontStyle.normal,
+                          color: AppColor.textColorPurple),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 23,
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 14, right: 14),
+                decoration: BoxDecoration(
+                    color: AppColor.buttonDarkWhite,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Men: $noOfMen'
+                        /* bookings != null &&
+                              bookings.noOfMen.toString().isNotEmpty &&
+                              !bookings.noOfMen.toString().contains('null')
+                              ? 'Men: ${bookings.noOfMen}'
+                              : 'Men: '*/,
+                        style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontStyle: FontStyle.normal,
+                            color: AppColor.textColorPurple),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Women: $noOfWomen'
+                        /*  bookings != null &&
+                              bookings.noOfWomen.toString().isNotEmpty &&
+                              !bookings.noOfWomen.toString().contains('null')
+                              ? 'Women: ${bookings.noOfWomen}'
+                              : 'Women: '*/,
+                        style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontStyle: FontStyle.normal,
+                            color: AppColor.textColorPurple),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Children: $noOfChildren'
+                        /*bookings != null &&
+                              bookings.noOfChildrenInt.toString().isNotEmpty &&
+                              !bookings.noOfChildrenInt
+                                  .toString()
+                                  .contains('null')
+                              ? 'Children: ${bookings.noOfChildrenInt}'
+                              : 'Children: '*/,
+                        style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontStyle: FontStyle.normal,
+                            color: AppColor.textColorPurple),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15),
 
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap:(){
+                        _acceptRequest();
+                      },
+                      child: Container(
+                        height: 40.0,
+                        color: Colors.transparent,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.green,
+                                style: BorderStyle.solid,
+                                width: 1.0,
+                              ),
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(8.0)
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Text('Accept',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.normal,
+                                    ),),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 40.0,
+                      color: Colors.transparent,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.red,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8.0)
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Text('Cancel',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.normal,
+                                  ),),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                ],),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Future<void> _acceptRequest() {
+    return _database
+        .reference()
+        .child("Requests")
+        .child(clientId)
+        .child(requestKey)
+        .update(<String, dynamic>{
+      'barberId': _user.id,
+      'barberImageUrl': _user.imageUrl,
+      'barberName': _user.name,
+      'barberNumber': _user.phone,
+      'requestStatus': "ACCEPTED",
+    }).whenComplete(() {
+
+   /*   notificationModel = NotificationData(
+          barberId: _user.id,
+          barberImageUrl: _user.imageUrl,
+          barberName: _user.name,
+          barberNumber: _user.phone,
+        requestStatus: "ACCEPTED"
+      );*/
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => AcceptRequest(notificationModel)));
+      //_controller.stop();
+    }).catchError((onError) => _logger.e('Error: $onError'));
+  }
 
   void _getBalance(){
 

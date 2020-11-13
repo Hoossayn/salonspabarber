@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:salonspabarber/helper/base_url.dart';
 import 'package:salonspabarber/helper/theme.dart';
 import 'package:salonspabarber/helper/validation.dart';
+import 'package:salonspabarber/utilities/image_loader.dart';
 
 import 'model/bookings.dart';
 

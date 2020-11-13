@@ -5,6 +5,7 @@ import 'package:salonspabarber/helper/pref_manager.dart';
 import 'package:salonspabarber/helper/validation.dart';
 import 'package:salonspabarber/ui/login/login_page.dart';
 import 'package:salonspabarber/ui/main/main_page.dart';
+import 'package:salonspabarber/utilities/image_loader.dart';
 
 class SplashScreenPage extends StatefulWidget {
   @override

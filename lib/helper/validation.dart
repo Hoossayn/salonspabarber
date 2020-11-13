@@ -28,7 +28,7 @@ bool validateSignInCredentials(
 
   return true;
 }
-
+/*
 Widget CircleImage(
     {double width,
       double height,
@@ -125,7 +125,7 @@ Widget CircleImage(
       ),
     );
   }
-}
+}*/
 
 String currency(BuildContext context, dynamic amount) {
   return NumberFormat.simpleCurrency(name: 'NGN', decimalDigits: 0).format(amount);

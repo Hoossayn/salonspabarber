@@ -42,11 +42,15 @@ dependencies:
   intl:
   awesome_dialog: ^1.2.0
   image_picker:
+  #url_launcher: ^5.7.10
   rave_flutter: ^0.0.9-alpha+2
   flutter_paystack: ^1.0.4+1
-  google_maps_flutter: ^0.4.0
+  google_maps_flutter: ^0.5.11+1
   geolocator: ^6.1.1
   firebase_messaging: ^6.0.13
+  flutter_polyline_points: ^0.2.4
+
+
 
 
   # The following adds the Cupertino Icons font to your application.

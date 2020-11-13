@@ -9,6 +9,9 @@ class SharedPreferencesHelper {
   static const String _USERS_PREF_KEY = 'key';
   static const String _JWT_PREF_KEY = 'jwt';
   static const String _ADDRESS_PREF_KEY = 'address';
+  static const String _CLIENT_ID = 'client_id';
+  static const String _REQUEST_KEY = 'request_key';
+
 
   read() async {
     final prefs = await SharedPreferences.getInstance();
@@ -70,5 +73,25 @@ class SharedPreferencesHelper {
   Future<String> getAddress() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(_ADDRESS_PREF_KEY);
+  }
+
+  Future<bool> setClientId(String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString(_CLIENT_ID, value);
+  }
+
+  Future<String> getClientId() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_CLIENT_ID);
+  }
+
+  Future<bool> setRequestKey(String value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString(_REQUEST_KEY, value);
+  }
+
+  Future<String> getRequestKey() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_REQUEST_KEY);
   }
 }
