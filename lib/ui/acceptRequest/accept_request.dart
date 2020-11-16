@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -389,7 +391,7 @@ class _AcceptRequestState extends State<AcceptRequest> {
                     path: StringRes.ERROR_ICON,
                     width: 40,
                     height: 40,
-                    //onTap: () => _cancelRequestToServer(),
+                    onTap: () => _showCancelDialog(),
                   ),
                   SizedBox(
                     height: 3,
@@ -692,5 +694,77 @@ class _AcceptRequestState extends State<AcceptRequest> {
         ),
       ),
     );
+  }
+
+  /// show arrival dialog
+  void _showCancelDialog() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        child: Platform.isAndroid
+            ? AlertDialog(
+          title: Text("Cancel Request"),
+          content: Text("Cancelling request after accepting them attract charges!"),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text(
+                "NO",
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: new Text("YES"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                var _map = Map<String, dynamic>();
+                //_map['hasArrived'] = true;
+                _map['requestStatus'] = 'CANCELLED';
+                await _database
+                    .reference()
+                    .child('Requests')
+                    .child(clientId)
+                    .child(requestKey)
+                    .update(_map)
+                    .whenComplete(() {
+//                        _startTimer(24);
+                });
+              },
+            ),
+          ],
+        )
+            : CupertinoAlertDialog(
+          title: Text("Cancel Request"),
+          content: Text("Cancelling request after accepting them attract charges!"),
+          actions: <Widget>[
+            CupertinoDialogAction(
+                isDefaultAction: true,
+                textStyle: TextStyle(color: Colors.red),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("NO")),
+            CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () async {
+                  Navigator.pop(context);
+                  var _map = Map<String, dynamic>();
+                 // _map['hasArrived'] = true;
+                  _map['requestStatus'] = 'CANCELLED';
+                  await _database
+                      .reference()
+                      .child('Requests')
+                      .child(clientId)
+                      .child(requestKey)
+                      .update(_map)
+                      .whenComplete(() {
+//                          _startTimer(24);
+                  });
+                },
+                child: Text("YES")),
+          ],
+        ));
   }
 }

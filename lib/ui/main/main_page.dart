@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -229,346 +230,371 @@ class _MainPageState extends State<MainPage> {
 
   contentBox(BuildContext context, String barberName, String address, String paymentMethod, String paymentStatus, String noOfMen, String noOfWomen, String noOfChildren){
     return showDialog(
+
       barrierDismissible: false,
       context: context,
-      child: Scaffold(
-        body: Container(
-          child: ListView(
-            children: <Widget>[
-              SizedBox(
-                height: 50,
-              ),
-              Row(
+      builder: (context){
+        return Dialog(
+          child: Scaffold(
+            body: Container(
+             // height:  400,
+              child: ListView(
                 children: <Widget>[
                   SizedBox(
-                    width: 32,
+                    height: 50,
                   ),
-                  Flexible(
-                    child: CircleImage(
-                      path: StringRes.ASSET_DEFAULT_AVATAR,
-                      width: 100.0,
-                      height: 100.0,
-                    ),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 32,
+                      ),
+                      Flexible(
+                        child: ImageLoader(
+                          path: StringRes.ASSET_DEFAULT_AVATAR,
+                          width: 100.0,
+                          height: 100.0,
+                        ),
+                      ),
+                      Flexible(
+                        child: ListTile(
+                          title: Text('Client Name',
+                              style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.normal,
+                                  color: AppColor.darkgrey)),
+                          subtitle: Container(
+                            margin: EdgeInsets.only(top: 10),
+                            decoration: BoxDecoration(
+                                color: AppColor.buttonDarkWhite,
+                                borderRadius: BorderRadius.circular(10)),
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                barberName,
+                                style: GoogleFonts.roboto(
+                                    fontSize: 18,
+                                    fontStyle: FontStyle.normal,
+                                    color: AppColor.textColorPurple),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 32,
+                      ),
+                    ],
                   ),
-                  Flexible(
-                    child: ListTile(
-                      title: Text('Client Name',
+                  SizedBox(
+                    height: 30,
+                  ),
+                  ListTile(
+                    title: Text('Address',
+                        style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontStyle: FontStyle.normal,
+                            color: AppColor.darkgrey)),
+                    isThreeLine: true,
+                    subtitle: Container(
+                      margin: EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          color: AppColor.buttonDarkWhite,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          address,
                           style: GoogleFonts.roboto(
                               fontSize: 14,
                               fontStyle: FontStyle.normal,
-                              color: AppColor.darkgrey)),
-                      subtitle: Container(
-                        margin: EdgeInsets.only(top: 10),
-                        decoration: BoxDecoration(
-                            color: AppColor.buttonDarkWhite,
-                            borderRadius: BorderRadius.circular(10)),
-                        width: MediaQuery.of(context).size.width / 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            barberName,
-                            style: GoogleFonts.roboto(
-                                fontSize: 18,
-                                fontStyle: FontStyle.normal,
-                                color: AppColor.textColorPurple),
-                          ),
+                              color: AppColor.textColorPurple),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(
-                    width: 32,
+                    height: 23,
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              ListTile(
-                title: Text('Address',
-                    style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontStyle: FontStyle.normal,
-                        color: AppColor.darkgrey)),
-                isThreeLine: true,
-                subtitle: Container(
-                  margin: EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                      color: AppColor.buttonDarkWhite,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      address,
-                      style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontStyle: FontStyle.normal,
-                          color: AppColor.textColorPurple),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 23,
-              ),
-              ListTile(
-                title: Text('Payment',
-                    style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontStyle: FontStyle.normal,
-                        color: AppColor.darkgrey)),
-                isThreeLine: true,
-                subtitle: Container(
-                  margin: EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                      color: AppColor.buttonDarkWhite,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ListTile(
+                    title: Text('Payment',
+                        style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontStyle: FontStyle.normal,
+                            color: AppColor.darkgrey)),
+                    isThreeLine: true,
+                    subtitle: Container(
+                      margin: EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          color: AppColor.buttonDarkWhite,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
                           children: <Widget>[
-                            Text(
-                              'Cash',
-                              style: GoogleFonts.roboto(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                  color: AppColor.textColorPurple),
-                            ),
-                            Text(paymentMethod
-                              /*bookings != null &&
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'Cash',
+                                  style: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      fontStyle: FontStyle.normal,
+                                      color: AppColor.textColorPurple),
+                                ),
+                                Text(paymentMethod
+                                  /*bookings != null &&
                                     bookings.serviceAmount.toString().isNotEmpty
                                     ? '${currency(context, _convertStringCurrencyToInt(bookings.serviceAmount.toString()))}'
                                     : '${currency(context, 0)}'*/,
-                              style: GoogleFonts.roboto(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                  color: AppColor.textColorPurple),
+                                  style: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      fontStyle: FontStyle.normal,
+                                      color: AppColor.textColorPurple),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 23,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Payment Status',
-                              style: GoogleFonts.roboto(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                  color: AppColor.textColorPurple),
+                            SizedBox(
+                              height: 23,
                             ),
-                            Text(
-                              paymentStatus
-                              /*bookings != null && bookings.paymentStatus.isNotEmpty
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'Payment Status',
+                                  style: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      fontStyle: FontStyle.normal,
+                                      color: AppColor.textColorPurple),
+                                ),
+                                Text(
+                                  paymentStatus
+                                  /*bookings != null && bookings.paymentStatus.isNotEmpty
                                     ? bookings.paymentStatus
                                     : ''*/,
-                              style: GoogleFonts.roboto(
-                                  fontSize: 14,
-                                  fontStyle: FontStyle.normal,
-                                  color: AppColor.textColorPurple),
+                                  style: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      fontStyle: FontStyle.normal,
+                                      color: AppColor.textColorPurple),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 23,
-              ),
-              ListTile(
-                title: Text('Preferred Tools',
-                    style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontStyle: FontStyle.normal,
-                        color: AppColor.darkgrey)),
-                isThreeLine: true,
-                subtitle: Container(
-                  margin: EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                      color: AppColor.buttonDarkWhite,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      '',
-                      style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontStyle: FontStyle.normal,
-                          color: AppColor.textColorPurple),
+                  SizedBox(
+                    height: 23,
+                  ),
+                  ListTile(
+                    title: Text('Preferred Tools',
+                        style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            fontStyle: FontStyle.normal,
+                            color: AppColor.darkgrey)),
+                    isThreeLine: true,
+                    subtitle: Container(
+                      margin: EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          color: AppColor.buttonDarkWhite,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          '',
+                          style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              fontStyle: FontStyle.normal,
+                              color: AppColor.textColorPurple),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 23,
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 14, right: 14),
-                decoration: BoxDecoration(
-                    color: AppColor.buttonDarkWhite,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Men: $noOfMen'
-                        /* bookings != null &&
+                  SizedBox(
+                    height: 23,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 14, right: 14),
+                    decoration: BoxDecoration(
+                        color: AppColor.buttonDarkWhite,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Men: $noOfMen'
+                            /* bookings != null &&
                               bookings.noOfMen.toString().isNotEmpty &&
                               !bookings.noOfMen.toString().contains('null')
                               ? 'Men: ${bookings.noOfMen}'
                               : 'Men: '*/,
-                        style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontStyle: FontStyle.normal,
-                            color: AppColor.textColorPurple),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Women: $noOfWomen'
-                        /*  bookings != null &&
+                            style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                                color: AppColor.textColorPurple),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Women: $noOfWomen'
+                            /*  bookings != null &&
                               bookings.noOfWomen.toString().isNotEmpty &&
                               !bookings.noOfWomen.toString().contains('null')
                               ? 'Women: ${bookings.noOfWomen}'
                               : 'Women: '*/,
-                        style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontStyle: FontStyle.normal,
-                            color: AppColor.textColorPurple),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Children: $noOfChildren'
-                        /*bookings != null &&
+                            style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                                color: AppColor.textColorPurple),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Children: $noOfChildren'
+                            /*bookings != null &&
                               bookings.noOfChildrenInt.toString().isNotEmpty &&
                               !bookings.noOfChildrenInt
                                   .toString()
                                   .contains('null')
                               ? 'Children: ${bookings.noOfChildrenInt}'
                               : 'Children: '*/,
-                        style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontStyle: FontStyle.normal,
-                            color: AppColor.textColorPurple),
-                      ),
+                            style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontStyle: FontStyle.normal,
+                                color: AppColor.textColorPurple),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 15),
+                  ),
+                  SizedBox(height: 15),
 
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap:(){
-                        _acceptRequest();
-                      },
-                      child: Container(
-                        height: 40.0,
-                        color: Colors.transparent,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.green,
-                                style: BorderStyle.solid,
-                                width: 1.0,
-                              ),
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(8.0)
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Text('Accept',
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.normal,
-                                    ),),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 40.0,
-                      color: Colors.transparent,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.red,
-                              style: BorderStyle.solid,
-                              width: 1.0,
-                            ),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap:(){
+                            _acceptRequest();
+                          },
+                          child: Container(
+                            height: 40.0,
                             color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(8.0)
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text('Cancel',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.normal,
-                                  ),),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.green,
+                                    style: BorderStyle.solid,
+                                    width: 1.0,
+                                  ),
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8.0)
                               ),
-                            )
-                          ],
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text('Accept',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.normal,
+                                        ),),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                ],),
-              )
-            ],
+                        InkWell(
+                          onTap: (){Navigator.pop(context);},
+                          child: Container(
+                            height: 40.0,
+                            color: Colors.transparent,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.red,
+                                    style: BorderStyle.solid,
+                                    width: 1.0,
+                                  ),
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8.0)
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text('Cancel',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.normal,
+                                        ),),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
+     // child: ,
     );
   }
 
 
   Future<void> _acceptRequest() {
 
-    //if(_database.reference().child("Requests").child(clientId).child(requestKey).child('requestStatus').toString() == "REQUESTING"){
-      return _database
-          .reference()
-          .child("Requests")
-          .child(clientId)
-          .child(requestKey)
-          .update(<String, dynamic>{
-        'barberId': _user.id,
-        'barberImageUrl': _user.imageUrl,
-        'barberName': _user.name,
-        'barberNumber': _user.phone,
-        'requestStatus': "ACCEPTED",
-      }).whenComplete(() {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => AcceptRequest(notificationModel)));
-        //_controller.stop();
-      }).catchError((onError) => _logger.e('Error: $onError'));
-   /* }else{
-      customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else');
-    }*/
+    _database.reference().child("Requests").child(clientId).child(requestKey).child('requestStatus').once().then((DataSnapshot snapshot) {
+      print('request value => ${snapshot.value.toString()}');
+      if(snapshot.value == "REQUESTING"){
+        print('request value => ${snapshot.value.toString()}');
+        return _database
+            .reference()
+            .child("Requests")
+            .child(clientId)
+            .child(requestKey)
+            .update(<String, dynamic>{
+          'barberId': _user.id,
+          'barberImageUrl': _user.imageUrl,
+          'barberName': _user.name,
+          'barberNumber': _user.phone,
+          'requestStatus': "ACCEPTED",
+        }).whenComplete(() {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => AcceptRequest(notificationModel)));
+          //_controller.stop();
+        }).catchError((onError) => _logger.e('Error: $onError'));
+      }else{
+        print('reaches snackbar');
+        Fluttertoast.showToast(
+            msg: "Oops, Request have been accepted by someone else",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+        Navigator.pop(context);
+       // customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else');
+      }
+    }).catchError((onError) => customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else'));
 
   }
 
@@ -602,6 +628,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       body: Container(
         child: Container(
           child: Column(
