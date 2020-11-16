@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:rave_flutter/rave_flutter.dart';
 import 'package:salonspabarber/entity/User.dart';
 import 'package:salonspabarber/helper/base_url.dart';
+import 'package:salonspabarber/helper/custom_widget.dart';
 import 'package:salonspabarber/helper/pref_manager.dart';
 import 'package:salonspabarber/helper/theme.dart';
 import 'package:salonspabarber/helper/validation.dart';
@@ -34,8 +35,6 @@ class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
-
-
 
 class _MainPageState extends State<MainPage> {
 
@@ -549,31 +548,28 @@ class _MainPageState extends State<MainPage> {
 
 
   Future<void> _acceptRequest() {
-    return _database
-        .reference()
-        .child("Requests")
-        .child(clientId)
-        .child(requestKey)
-        .update(<String, dynamic>{
-      'barberId': _user.id,
-      'barberImageUrl': _user.imageUrl,
-      'barberName': _user.name,
-      'barberNumber': _user.phone,
-      'requestStatus': "ACCEPTED",
-    }).whenComplete(() {
 
-   /*   notificationModel = NotificationData(
-          barberId: _user.id,
-          barberImageUrl: _user.imageUrl,
-          barberName: _user.name,
-          barberNumber: _user.phone,
-        requestStatus: "ACCEPTED"
-      );*/
+    //if(_database.reference().child("Requests").child(clientId).child(requestKey).child('requestStatus').toString() == "REQUESTING"){
+      return _database
+          .reference()
+          .child("Requests")
+          .child(clientId)
+          .child(requestKey)
+          .update(<String, dynamic>{
+        'barberId': _user.id,
+        'barberImageUrl': _user.imageUrl,
+        'barberName': _user.name,
+        'barberNumber': _user.phone,
+        'requestStatus': "ACCEPTED",
+      }).whenComplete(() {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => AcceptRequest(notificationModel)));
+        //_controller.stop();
+      }).catchError((onError) => _logger.e('Error: $onError'));
+   /* }else{
+      customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else');
+    }*/
 
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => AcceptRequest(notificationModel)));
-      //_controller.stop();
-    }).catchError((onError) => _logger.e('Error: $onError'));
   }
 
   void _getBalance(){
