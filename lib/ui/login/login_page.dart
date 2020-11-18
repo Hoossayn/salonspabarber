@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(20.0),
       ),
       child: TextFormField(
-        key: Key("Email Address"),
+        key: Key("Phone Number"),
         keyboardType: TextInputType.text,
         style: style,
         controller: _emailController,

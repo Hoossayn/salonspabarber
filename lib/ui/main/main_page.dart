@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,8 +46,8 @@ class _MainPageState extends State<MainPage> {
   CustomLoader _loader;
   final Logger _logger = Logger();
   MainState _mainState;
-  var walletBalance = '';
-  var earningBalance = '';
+  var walletBalance = '0' ;
+  var earningBalance = '0';
   double _latitude = 0.0, _longitude = 0.0;
   bool _isMapLoading = true;
   Position currentLocation;
@@ -65,8 +66,7 @@ class _MainPageState extends State<MainPage> {
   //AnimationController _controller;
   String clientId;
   String requestKey;
-
-
+  final storage = FlutterSecureStorage();
 
 
   static const LatLng _center = const LatLng(45.521563, -122.677433);
@@ -94,17 +94,17 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
     _mainState = Provider.of<MainState>(context, listen:false);
     _fundingWalletState = Provider.of<FundingWalletState>(context, listen: false);
     _withdrawState = Provider.of<WithdrawState>(context, listen:false);
 
     _loader = CustomLoader(context);
+    getImageUrlInStorage();
     _getUserDetail();
     _getUserLocation();
     _registerOnFirebase();
     getMessage();
-    super.initState();
 
   }
 
@@ -559,7 +559,6 @@ class _MainPageState extends State<MainPage> {
 
 
   Future<void> _acceptRequest() {
-
     _database.reference().child("Requests").child(clientId).child(requestKey).child('requestStatus').once().then((DataSnapshot snapshot) {
       print('request value => ${snapshot.value.toString()}');
       if(snapshot.value == "REQUESTING"){
@@ -609,14 +608,18 @@ class _MainPageState extends State<MainPage> {
     _loader.showLoader();
     _mainState.getWalletBalance(url: 'getbarberfirstbal', body: _walletBody).then((walletBal){
 
-      setState(() => walletBalance = walletBal.balance == null? '0': walletBal.balance);
-      print('balance ${walletBal.balance}');
+      setState(() => walletBalance = walletBal.balance == null? '0':
+      currency(context, int.parse(walletBal.balance.toString())));
+      print('wallet balance ${walletBal.balance}');
       //_loader.hideLoader();
     });
 
     _mainState.getEarningBalance(url: 'barberbal', body: _earningBody).then((earningBal) {
 
-      setState(() => earningBalance = earningBal.balance == null ? '0': earningBal.balance);
+      setState(() => earningBalance = earningBal.balance == null ? '0':
+      currency(context, int.parse(earningBal.balance.toString())) );
+      print(' earning balance ${earningBal.balance}');
+
       _loader.hideLoader();
 
     })   .catchError((error) {
@@ -628,16 +631,19 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: true,
       key: scaffoldKey,
       body: Container(
-        child: Container(
-          child: Column(
-            children: [
-              SizedBox(height: 20,),
-              Expanded(
-                flex: 3,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                SizedBox(height: 20,),
+                Expanded(
+                  flex: 3,
                   child: Container(
-                color: Colors.deepPurple,
+                    color: Colors.deepPurple,
                     child: Column(
                       children: [
                         Padding(
@@ -645,27 +651,31 @@ class _MainPageState extends State<MainPage> {
                           child: Row(
                             children: [
                               InkWell(
-                                onTap:(){
-                                  Navigator.of(context)
+                                onTap:() async {
+                                  var result = await Navigator.of(context)
                                       .push(MaterialPageRoute(builder: (context) => ProfilePage()));
+
+                                  if(result != null){
+                                    getImageUrlInStorage();
+                                  }
                                 },
                                 child: CircleAvatar(
-                                    backgroundImage:  AssetImage('assets/default_user.jpg'),
+                                    backgroundImage: _user.imageUrl  != null ? NetworkImage(_user.imageUrl) : AssetImage('assets/default_user.jpg'),
                                     radius: 20.0
                                 ),
                               ),
-                          ],
+                            ],
                           ),
                         ),
                         Text(
-                          'Hi, hossayn',
+                          'Hi, ${_user.name}',
                           style: TextStyle(
                               color: Colors.white,
                               fontFamily: 'Varela',
                               fontSize: 20.0,
                               fontWeight: FontWeight.normal),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 15),
                         Padding(
                           padding: const EdgeInsets.only(left:15.0, right: 15.0),
                           child: Row(
@@ -690,7 +700,7 @@ class _MainPageState extends State<MainPage> {
                                             fontWeight: FontWeight.normal),
                                       ),
                                       SizedBox(height: 5),
-                                      Text('',
+                                      Text(walletBalance.toString(),
                                         //currency(context, int.parse(walletBalance.toString())),
                                         style: TextStyle(
                                             color: Colors.black,
@@ -758,8 +768,8 @@ class _MainPageState extends State<MainPage> {
                                             fontWeight: FontWeight.normal),
                                       ),
                                       SizedBox(height: 5),
-                                      Text('',
-                                          //currency(context, int.parse(earningBalance.toString())),
+                                      Text(earningBalance.toString(),
+                                        //currency(context, int.parse(earningBalance.toString())),
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'Varela',
@@ -806,7 +816,7 @@ class _MainPageState extends State<MainPage> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 12),
+                        SizedBox(height: 25),
                         Padding(
                           padding: const EdgeInsets.only(left:15.0, right: 15.0),
                           child: Row(
@@ -889,21 +899,22 @@ class _MainPageState extends State<MainPage> {
                         )
                       ],
                     ),
-              ),
-              ),
-              Expanded(
-                flex: 4,
-                  child: Container(
-                    child: GoogleMap(
-                      onMapCreated: _onMapCreated,
-                        initialCameraPosition: CameraPosition(
-                          target: currentPostion,
-                          zoom: 11.0,
+                  ),
+                ),
+                Expanded(
+                    flex: 5,
+                    child: Container(
+                      child: GoogleMap(
+                          onMapCreated: _onMapCreated,
+                          initialCameraPosition: CameraPosition(
+                            target: currentPostion,
+                            zoom: 11.0,
 
-                        )),
-                  ))
-            ],
-          )
+                          )),
+                    ))
+              ],
+            )
+          ],
         ),
       ),
     );
@@ -1015,6 +1026,16 @@ class _MainPageState extends State<MainPage> {
         );
       },
     );
+  }
+
+  getImageUrlInStorage() async {
+    var result = await storage.read(key: "profileImageUrl");
+    var updatedName = await storage.read(key: "updatedName");
+
+    setState(() {
+      _user.imageUrl = result;
+      _user.name = updatedName;
+    });
   }
 
   static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async{

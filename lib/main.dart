@@ -10,6 +10,7 @@ import 'package:salonspabarber/ui/main/state/main_state.dart';
 import 'package:salonspabarber/ui/main/withdrawal/state/withdraw_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/earningHistory/state/earning_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/walletHistory/state/wallet_state.dart';
+import 'package:salonspabarber/ui/profile/state/prof_state.dart';
 import 'package:salonspabarber/ui/splash.dart';
 
 
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget{
         ChangeNotifierProvider<WalletState>(create: (_) => WalletState()),
         ChangeNotifierProvider<FundingWalletState>(create: (_) => FundingWalletState()),
         ChangeNotifierProvider<WithdrawState>(create: (_) => WithdrawState()),
+        ChangeNotifierProvider<ProfSettingsState>(create: (_) => ProfSettingsState()),
 
 
       ],
