@@ -331,14 +331,13 @@ class _AcceptRequestState extends State<AcceptRequest> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        CircleImage(
-                          path: _confirm != null &&
-                              _confirm.barberImageUrl != null &&
-                              _confirm.barberImageUrl.isNotEmpty
-                              ? _confirm.barberImageUrl
-                              : StringRes.ASSET_DEFAULT_AVATAR,
-                          width: 60.0,
-                          height: 60.0,
+                        CircleAvatar(
+                          backgroundImage:
+                              widget.clientImgUrl != null &&
+                              widget.clientImgUrl.isNotEmpty
+                              ? NetworkImage(widget.clientImgUrl)
+                              : AssetImage(StringRes.ASSET_DEFAULT_USER),
+                          radius: 28,
                         ),
                         SizedBox(
                           width: 10,
@@ -490,14 +489,13 @@ class _AcceptRequestState extends State<AcceptRequest> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        CircleImage(
-                          path: _confirm != null &&
-                              _confirm.barberImageUrl != null &&
-                              _confirm.barberImageUrl.isNotEmpty
-                              ? _confirm.barberImageUrl
-                              : StringRes.ASSET_DEFAULT_AVATAR,
-                          width: 60.0,
-                          height: 60.0,
+                        CircleAvatar(
+                          backgroundImage:
+                          widget.clientImgUrl != null &&
+                              widget.clientImgUrl.isNotEmpty
+                              ? NetworkImage(widget.clientImgUrl)
+                              : AssetImage(StringRes.ASSET_DEFAULT_USER),
+                          radius: 28,
                         ),
                         SizedBox(
                           width: 10,
@@ -647,14 +645,13 @@ class _AcceptRequestState extends State<AcceptRequest> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        CircleImage(
-                          path: _confirm != null &&
-                              _confirm.barberImageUrl != null &&
-                              _confirm.barberImageUrl.isNotEmpty
-                              ? _confirm.barberImageUrl
-                              : StringRes.ASSET_DEFAULT_AVATAR,
-                          width: 60.0,
-                          height: 60.0,
+                        CircleAvatar(
+                          backgroundImage:
+                          widget.clientImgUrl != null &&
+                              widget.clientImgUrl.isNotEmpty
+                              ? NetworkImage(widget.clientImgUrl)
+                              : AssetImage(StringRes.ASSET_DEFAULT_USER),
+                          radius: 28,
                         ),
                         SizedBox(
                           width: 10,

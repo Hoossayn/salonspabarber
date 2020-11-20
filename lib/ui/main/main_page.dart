@@ -269,10 +269,10 @@ class _MainPageState extends State<MainPage> {
                       width: 32,
                     ),
                     Flexible(
-                      child: ImageLoader(
-                        path: StringRes.ASSET_DEFAULT_AVATAR,
-                        width: 100.0,
-                        height: 100.0,
+                      child: CircleAvatar(
+                        //path: StringRes.ASSET_DEFAULT_USER,
+                          backgroundImage: clientImageUrl  != null ? NetworkImage(clientImageUrl) : AssetImage(StringRes.ASSET_DEFAULT_USER),
+                          radius: 35.0
                       ),
                     ),
                     Flexible(
