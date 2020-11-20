@@ -186,10 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   elevation: 7.0,
                   child: InkWell(
                     onTap: ()  {
-                      // _validateAndMakeRequest();
-                  /*    Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) => MainPage()));*/
-
+                      _showLogoutDialog();
                     },
                     child: Center(
                       child: Text(
@@ -209,6 +206,59 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  /// show arrival dialog
+  void _showLogoutDialog() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        child: Platform.isAndroid
+            ? AlertDialog(
+          title: Text("Logout"),
+          content: Text("Are you sure you want to logout?"),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text(
+                "NO",
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: new Text("YES"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                storage.deleteAll();
+                _prefManager.logout(context);
+              },
+            ),
+          ],
+        )
+            : CupertinoAlertDialog(
+          title: Text("Cancel Request"),
+          content: Text("Cancelling request after accepting them attract charges!"),
+          actions: <Widget>[
+            CupertinoDialogAction(
+                isDefaultAction: true,
+                textStyle: TextStyle(color: Colors.red),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("NO")),
+            CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () async {
+                  Navigator.pop(context);
+
+                  storage.deleteAll();
+                  _prefManager.logout(context);
+                },
+                child: Text("YES")),
+          ],
+        ));
   }
 
   _imgFromGallery() async {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:salonspabarber/entity/User.dart';
+import 'package:salonspabarber/ui/login/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -39,9 +40,11 @@ class SharedPreferencesHelper {
     prefs.remove(_USERS_PREF_KEY);
     prefs.remove(_JWT_PREF_KEY);
     prefs.remove(_ADDRESS_PREF_KEY);
+    prefs.remove(_CLIENT_ID);
+    prefs.remove(_REQUEST_KEY);
 
-   /* Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));*/
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
 
   }
 
@@ -94,4 +97,6 @@ class SharedPreferencesHelper {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(_REQUEST_KEY);
   }
+
+
 }
