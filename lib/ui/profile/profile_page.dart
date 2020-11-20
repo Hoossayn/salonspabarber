@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,8 @@ class _ProfilePageState extends State<ProfilePage> {
   final Logger _logger = Logger();
   File _image;
   final storage = FlutterSecureStorage();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
 
   TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -233,6 +236,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.of(context).pop();
                 storage.deleteAll();
                 _prefManager.logout(context);
+                _firebaseMessaging.unsubscribeFromTopic("/topics/Enter_your_topic_name");
+
               },
             ),
           ],
@@ -252,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 isDefaultAction: true,
                 onPressed: () async {
                   Navigator.pop(context);
-
+                  _firebaseMessaging.unsubscribeFromTopic("/topics/Enter_your_topic_name");
                   storage.deleteAll();
                   _prefManager.logout(context);
                 },

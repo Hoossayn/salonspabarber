@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:need_resume/need_resume.dart';
 import 'package:provider/provider.dart';
 import 'package:rave_flutter/rave_flutter.dart';
 import 'package:salonspabarber/entity/User.dart';
@@ -38,7 +39,7 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends ResumableState<MainPage> {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final _prefManager = SharedPreferencesHelper();
@@ -46,6 +47,7 @@ class _MainPageState extends State<MainPage> {
   CustomLoader _loader;
   final Logger _logger = Logger();
   MainState _mainState;
+  bool isSwitched = false;
   var walletBalance = '0' ;
   var earningBalance = '0';
   double _latitude = 0.0, _longitude = 0.0;
@@ -98,7 +100,7 @@ class _MainPageState extends State<MainPage> {
     _mainState = Provider.of<MainState>(context, listen:false);
     _fundingWalletState = Provider.of<FundingWalletState>(context, listen: false);
     _withdrawState = Provider.of<WithdrawState>(context, listen:false);
-
+    isSwitched = true;
     _loader = CustomLoader(context);
     getImageUrlInStorage();
     _getUserDetail();
@@ -106,6 +108,14 @@ class _MainPageState extends State<MainPage> {
     _registerOnFirebase();
     getMessage();
 
+  }
+
+
+  @override
+  void onResume() {
+    // Implement your code inside here
+    _getUserDetail();
+    print('HomeScreen is resumed!');
   }
 
   void _getUserDetail(){
@@ -648,6 +658,16 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  onlineStatus(bool isOnline){
+    if(isOnline){
+      _firebaseMessaging.subscribeToTopic("/topics/Enter_your_topic_name");
+
+    }else{
+      _firebaseMessaging.unsubscribeFromTopic("/topics/Enter_your_topic_name");
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -659,7 +679,7 @@ class _MainPageState extends State<MainPage> {
           children: [
             Column(
               children: [
-                SizedBox(height: 20,),
+                SizedBox(height: 30,),
                 Expanded(
                   flex: 3,
                   child: Container(
@@ -669,6 +689,7 @@ class _MainPageState extends State<MainPage> {
                         Padding(
                           padding: const EdgeInsets.all(18.0),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               InkWell(
                                 onTap:() async {
@@ -684,6 +705,20 @@ class _MainPageState extends State<MainPage> {
                                     radius: 20.0
                                 ),
                               ),
+                              Center(
+                                child: Switch(
+                                  value: isSwitched,
+                                  onChanged: (value){
+                                    setState(() {
+                                      isSwitched=value;
+                                      onlineStatus(value);
+                                    });
+                                  },
+                                  activeTrackColor: Colors.lightGreenAccent,
+                                  activeColor: Colors.green,
+                                  inactiveTrackColor: Colors.red,
+                                )
+                              )
                             ],
                           ),
                         ),
