@@ -27,7 +27,11 @@ const LatLng DEST_LOCATION = LatLng(42.6871386, -71.2143403);
 class AcceptRequest extends StatefulWidget {
 
   NotificationData notificationData;
-  AcceptRequest(this.notificationData);
+  String clientImgUrl;
+  String clientName;
+  String clientAddress;
+  String clientPhone;
+  AcceptRequest(this.notificationData, this.clientImgUrl, this.clientName, this.clientAddress, this.clientPhone);
 
   @override
   _AcceptRequestState createState() => _AcceptRequestState();
@@ -340,8 +344,8 @@ class _AcceptRequestState extends State<AcceptRequest> {
                           width: 10,
                         ),
                         Text(
-                          _confirm.barberName,
-                          style: TextStyle(fontSize: 16, color: Colors.black26),
+                          widget.clientName,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         )
                       ],
                     ),
@@ -363,8 +367,18 @@ class _AcceptRequestState extends State<AcceptRequest> {
                       height: 12,
                     ),
                     Text(
-                      'this time starts immediately you confirm Arrival',
+                      'This time starts immediately you confirm Arrival',
                       style: TextStyle(fontSize: 14, color: Colors.black26),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right:15.0),
+                      child: Text(
+                        widget.clientAddress,
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      ),
                     ),
                   ],
                 ),
@@ -489,8 +503,8 @@ class _AcceptRequestState extends State<AcceptRequest> {
                           width: 10,
                         ),
                         Text(
-                          _confirm.barberName,
-                          style: TextStyle(fontSize: 16, color: Colors.black26),
+                          widget.clientName,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         )
                       ],
                     ),
@@ -512,8 +526,18 @@ class _AcceptRequestState extends State<AcceptRequest> {
                       height: 12,
                     ),
                     Text(
-                      'this time starts immediately you confirm Arrival',
+                      'This time starts immediately you confirm Arrival',
                       style: TextStyle(fontSize: 14, color: Colors.black26),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right:15.0),
+                      child: Text(
+                        widget.clientAddress,
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      ),
                     ),
                   ],
                 ),
@@ -636,8 +660,8 @@ class _AcceptRequestState extends State<AcceptRequest> {
                           width: 10,
                         ),
                         Text(
-                          _confirm.barberName,
-                          style: TextStyle(fontSize: 16, color: Colors.black26),
+                          widget.clientName,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         )
                       ],
                     ),
@@ -659,8 +683,18 @@ class _AcceptRequestState extends State<AcceptRequest> {
                       height: 12,
                     ),
                     Text(
-                      'this time starts immediately you confirm Arrival',
+                      'This time starts immediately you confirm Arrival',
                       style: TextStyle(fontSize: 14, color: Colors.black26),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right:15.0),
+                      child: Text(
+                        widget.clientAddress,
+                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      ),
                     ),
                   ],
                 ),
