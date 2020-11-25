@@ -11,6 +11,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:local_auth/auth_strings.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'package:need_resume/need_resume.dart';
 import 'package:provider/provider.dart';
@@ -48,12 +50,15 @@ class _MainPageState extends ResumableState<MainPage> {
   final Logger _logger = Logger();
   MainState _mainState;
   bool isSwitched = false;
-  var walletBalance = '0' ;
+  var walletBalance = '0';
+
   var earningBalance = '0';
-  double _latitude = 0.0, _longitude = 0.0;
+  double _latitude = 0.0,
+      _longitude = 0.0;
   bool _isMapLoading = true;
   Position currentLocation;
-  LatLng currentPostion ;
+  LatLng currentPostion;
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String publicKey = "FLWPUBK_TEST-ae4457f1ce3ba0593121ece7eaf9aac2-X";
   String encryptionKey = "FLWSECK_TESTe95e6d817dfc";
@@ -65,9 +70,12 @@ class _MainPageState extends ResumableState<MainPage> {
   NotificationData notificationModel;
   final _preManager = SharedPreferencesHelper();
   DatabaseReference _database = FirebaseDatabase.instance.reference();
+
   //AnimationController _controller;
   String clientId, clientImageUrl, clientName, clientAddress, clientPhone;
   String requestKey;
+  String clientLatitude;
+  String clientLongitude;
   final storage = FlutterSecureStorage();
 
 
@@ -97,9 +105,10 @@ class _MainPageState extends ResumableState<MainPage> {
   @override
   void initState() {
     super.initState();
-    _mainState = Provider.of<MainState>(context, listen:false);
-    _fundingWalletState = Provider.of<FundingWalletState>(context, listen: false);
-    _withdrawState = Provider.of<WithdrawState>(context, listen:false);
+    _mainState = Provider.of<MainState>(context, listen: false);
+    _fundingWalletState =
+        Provider.of<FundingWalletState>(context, listen: false);
+    _withdrawState = Provider.of<WithdrawState>(context, listen: false);
     isSwitched = true;
     _loader = CustomLoader(context);
     getImageUrlInStorage();
@@ -107,7 +116,6 @@ class _MainPageState extends ResumableState<MainPage> {
     _getUserLocation();
     _registerOnFirebase();
     getMessage();
-
   }
 
 
@@ -118,13 +126,13 @@ class _MainPageState extends ResumableState<MainPage> {
     print('HomeScreen is resumed!');
   }
 
-  void _getUserDetail(){
+  void _getUserDetail() {
     _prefManager.getUsersDetails().then((value) {
       setState(() {
         _user = value;
         _getBalance();
       });
-      print('Homename: ${_user.id}');
+      print('Homename: ${_user.name}');
     });
   }
 
@@ -138,30 +146,42 @@ class _MainPageState extends ResumableState<MainPage> {
   }
 
   void getMessage() {
-
-
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
           print('received message $message');
+          print("client location1 => ${message["data"]["userLongitude"]} - ${message["data"]["userLatitude"]}");
 
 
           setState(() {
+            String newAddress = message["data"]["clientAddress"]?.substring(
+                message["data"]["clientAddress"].indexOf(",") + 1);
 
+            /*clientLatitude = message["data"]["userLatitude"];
+            clientLongitude = message["data"]["userLongitude"];*/
 
-            String newAddress = message["data"]["clientAddress"]?.substring(message["data"]["clientAddress"].indexOf(",")+1);
 
             // CustomDialogBox(context: context, title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
-            contentBox(context, message["data"]["clientName"],
+            contentBox(
+                context,
+                message["data"]["clientName"],
                 '**** $newAddress',
-                message["data"]["paymentAmount"], message["data"]["paymentStatus"],
-                message["data"]["noOfMen"], message["data"]["noOfWomen"], message["data"]["noOfChildren"]);
+                message["data"]["paymentAmount"],
+                message["data"]["paymentStatus"],
+                message["data"]["noOfMen"],
+                message["data"]["noOfWomen"],
+                message["data"]["noOfChildren"]);
 
             clientId = message["data"]["clientId"];
             requestKey = message["data"]["requestKey"];
             clientName = message["data"]["clientName"];
             clientAddress = message["data"]["clientAddress"];
             clientImageUrl = message["data"]["clientPhoto"];
-            clientPhone = message["data"]["clientNumber"] ;
+            clientPhone = message["data"]["clientNumber"];
+            clientLatitude = message["data"]["userLatitude"];
+            clientLongitude = message["data"]["userLongitude"];
+
+            print("client location1 => ${message["data"]["userLongitude"]} - ${message["data"]["userLatitude"]}");
+
 
             _prefManager.setClientId(clientId);
             _prefManager.setRequestKey(requestKey);
@@ -179,34 +199,48 @@ class _MainPageState extends ResumableState<MainPage> {
               requestStatus: '${message["data"]["requestStatus"]}',
 
             );
-
           });
         }, onResume: (Map<String, dynamic> message) async {
-      String newAddress = message["data"]["clientAddress"]?.substring(message["data"]["clientAddress"].indexOf(",")+1);
+      String newAddress = message["data"]["clientAddress"]?.substring(
+          message["data"]["clientAddress"].indexOf(",") + 1);
 
 
-      contentBox(context, message["data"]["clientName"],
+      contentBox(
+          context,
+          message["data"]["clientName"],
           '**** $newAddress',
-          message["data"]["paymentAmount"], message["data"]["paymentStatus"],
-          message["data"]["noOfMen"], message["data"]["noOfWomen"], message["data"]["noOfChildren"]);
+          message["data"]["paymentAmount"],
+          message["data"]["paymentStatus"],
+          message["data"]["noOfMen"],
+          message["data"]["noOfWomen"],
+          message["data"]["noOfChildren"]);
 
 
-         // CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
+      // CustomDialogBox(title: message["data"]["clientName"], descriptions: message["data"]["clientName"], text: message["data"]["clientName"]);
       print('on resume $message');
       setState(() {
-        String newAddress = message["data"]["clientAddress"]?.substring(message["data"]["clientAddress"].indexOf(",")+1);
+        String newAddress = message["data"]["clientAddress"]?.substring(
+            message["data"]["clientAddress"].indexOf(",") + 1);
 
-        contentBox(context, message["data"]["clientName"],
+        contentBox(
+            context,
+            message["data"]["clientName"],
             '**** $newAddress',
-            message["data"]["paymentAmount"], message["data"]["paymentStatus"],
-            message["data"]["noOfMen"], message["data"]["noOfWomen"], message["data"]["noOfChildren"]);
+            message["data"]["paymentAmount"],
+            message["data"]["paymentStatus"],
+            message["data"]["noOfMen"],
+            message["data"]["noOfWomen"],
+            message["data"]["noOfChildren"]);
 
         clientId = message["data"]["clientId"];
         requestKey = message["data"]["requestKey"];
         clientName = message["data"]["clientName"];
         clientAddress = message["data"]["clientAddress"];
         clientImageUrl = message["data"]["clientPhoto"];
-        clientPhone = message["data"]["clientNumber"] ;
+        clientPhone = message["data"]["clientNumber"];
+        clientLatitude = message["data"]["userLatitude"];
+        clientLongitude = message["data"]["userLongitude"];
+        print("client location1 => ${message["data"]["userLongitude"]} - ${message["data"]["userLatitude"]}");
 
         _prefManager.setClientId(clientId);
         _prefManager.setRequestKey(requestKey);
@@ -224,7 +258,6 @@ class _MainPageState extends ResumableState<MainPage> {
           requestStatus: '${message["data"]["requestStatus"]}',
 
         );
-
       });
     }, onLaunch: (Map<String, dynamic> message) async {
       print('on launch $message');
@@ -234,10 +267,12 @@ class _MainPageState extends ResumableState<MainPage> {
         clientName = message["data"]["clientName"];
         clientAddress = message["data"]["clientAddress"];
         clientImageUrl = message["data"]["clientPhoto"];
-        clientPhone = message["data"]["clientNumber"] ;
-
+        clientPhone = message["data"]["clientNumber"];
+        clientLatitude = message["data"]["userLatitude"];
+        clientLongitude = message["data"]["userLongitude"];
         _prefManager.setClientId(clientId);
         _prefManager.setRequestKey(requestKey);
+        print("client location1 => ${message["data"]["userLongitude"]} - ${message["data"]["userLatitude"]}");
 
         print('sharedPreference ${clientId}  ${requestKey}');
 
@@ -252,21 +287,25 @@ class _MainPageState extends ResumableState<MainPage> {
           requestStatus: '${message["data"]["requestStatus"]}',
 
         );
-
       });
     },
-      onBackgroundMessage: myBackgroundMessageHandler);
+        onBackgroundMessage: myBackgroundMessageHandler);
   }
 
 
-  contentBox(BuildContext context, String barberName, String address, String paymentMethod, String paymentStatus, String noOfMen, String noOfWomen, String noOfChildren){
+  contentBox(BuildContext context, String barberName, String address,
+      String paymentMethod, String paymentStatus, String noOfMen,
+      String noOfWomen, String noOfChildren) {
     return showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (context){
+      builder: (context) {
         return Dialog(
           child: Container(
-            height:  MediaQuery.of(context).size.height - 150,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height - 150,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -281,7 +320,9 @@ class _MainPageState extends ResumableState<MainPage> {
                     Flexible(
                       child: CircleAvatar(
                         //path: StringRes.ASSET_DEFAULT_USER,
-                          backgroundImage: clientImageUrl  != null ? NetworkImage(clientImageUrl) : AssetImage(StringRes.ASSET_DEFAULT_USER),
+                          backgroundImage: clientImageUrl != null
+                              ? NetworkImage(clientImageUrl)
+                              : AssetImage(StringRes.ASSET_DEFAULT_USER),
                           radius: 35.0
                       ),
                     ),
@@ -297,7 +338,10 @@ class _MainPageState extends ResumableState<MainPage> {
                           decoration: BoxDecoration(
                               color: AppColor.buttonDarkWhite,
                               borderRadius: BorderRadius.circular(10)),
-                          width: MediaQuery.of(context).size.width / 2,
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width / 2,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -446,7 +490,10 @@ class _MainPageState extends ResumableState<MainPage> {
                 ),
                 Container(
                   margin: EdgeInsets.only(left: 14, right: 14),
-                  width: MediaQuery.of(context).size.width - 20,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width - 20,
                   decoration: BoxDecoration(
                       color: AppColor.buttonDarkWhite,
                       borderRadius: BorderRadius.circular(10)),
@@ -509,7 +556,7 @@ class _MainPageState extends ResumableState<MainPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
-                        onTap:(){
+                        onTap: () {
                           _acceptRequest();
                         },
                         child: Container(
@@ -544,7 +591,9 @@ class _MainPageState extends ResumableState<MainPage> {
                         ),
                       ),
                       InkWell(
-                        onTap: (){Navigator.pop(context);},
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
                         child: Container(
                           height: 40.0,
                           color: Colors.transparent,
@@ -583,15 +632,17 @@ class _MainPageState extends ResumableState<MainPage> {
           ),
         );
       },
-     // child: ,
+      // child: ,
     );
   }
 
 
   Future<void> _acceptRequest() {
-    _database.reference().child("Requests").child(clientId).child(requestKey).child('requestStatus').once().then((DataSnapshot snapshot) {
+    _database.reference().child("Requests").child(clientId).child(requestKey)
+        .child('requestStatus').once()
+        .then((DataSnapshot snapshot) {
       print('request value => ${snapshot.value.toString()}');
-      if(snapshot.value == "REQUESTING"){
+      if (snapshot.value == "REQUESTING") {
         print('request value => ${snapshot.value.toString()}');
         return _database
             .reference()
@@ -606,10 +657,14 @@ class _MainPageState extends ResumableState<MainPage> {
           'requestStatus': "ACCEPTED",
         }).whenComplete(() {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => AcceptRequest(notificationModel, clientImageUrl,clientName, clientAddress, clientPhone)));
+              .push(MaterialPageRoute(builder: (context) => AcceptRequest(
+              notificationModel, clientImageUrl, clientName, clientAddress,
+              clientPhone, clientLatitude, clientLongitude)));
+
+          print("client location => ${clientLongitude} - ${clientLatitude}");
           //_controller.stop();
         }).catchError((onError) => _logger.e('Error: $onError'));
-      }else{
+      } else {
         print('reaches snackbar');
         Fluttertoast.showToast(
             msg: "Oops, Request have been accepted by someone else",
@@ -621,14 +676,13 @@ class _MainPageState extends ResumableState<MainPage> {
             fontSize: 16.0
         );
         Navigator.pop(context);
-       // customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else');
+        // customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else');
       }
-    }).catchError((onError) => customSnackBar(scaffoldKey, 'Oops, Request have been accepted by someone else'));
-
+    }).catchError((onError) => customSnackBar(
+        scaffoldKey, 'Oops, Request have been accepted by someone else'));
   }
 
-  void _getBalance(){
-
+  void _getBalance() {
     Map _walletBody = Map<String, dynamic>();
     _walletBody['barberid'] = _user.id;
 
@@ -636,35 +690,34 @@ class _MainPageState extends ResumableState<MainPage> {
     _earningBody['id'] = _user.id;
 
     _loader.showLoader();
-    _mainState.getWalletBalance(url: 'getbarberfirstbal', body: _walletBody).then((walletBal){
-
-      setState(() => walletBalance = walletBal.balance == null? '0':
+    _mainState.getWalletBalance(url: 'getbarberfirstbal', body: _walletBody)
+        .then((walletBal) {
+      setState(() =>
+      walletBalance = walletBal.balance == null ? '0' :
       currency(context, int.parse(walletBal.balance.toString())));
       print('wallet balance ${walletBal.balance}');
       //_loader.hideLoader();
     });
 
-    _mainState.getEarningBalance(url: 'barberbal', body: _earningBody).then((earningBal) {
-
-      setState(() => earningBalance = earningBal.balance == null ? '0':
-      currency(context, int.parse(earningBal.balance.toString())) );
+    _mainState.getEarningBalance(url: 'barberbal', body: _earningBody).then((
+        earningBal) {
+      setState(() =>
+      earningBalance = earningBal.balance == null ? '0' :
+      currency(context, int.parse(earningBal.balance.toString())));
       print(' earning balance ${earningBal.balance}');
 
       _loader.hideLoader();
-
-    })   .catchError((error) {
+    }).catchError((error) {
       _logger.e('Error: $error');
       _loader.hideLoader();
     });
   }
 
-  onlineStatus(bool isOnline){
-    if(isOnline){
+  onlineStatus(bool isOnline) {
+    if (isOnline) {
       _firebaseMessaging.subscribeToTopic("/topics/Enter_your_topic_name");
-
-    }else{
+    } else {
       _firebaseMessaging.unsubscribeFromTopic("/topics/Enter_your_topic_name");
-
     }
   }
 
@@ -692,32 +745,35 @@ class _MainPageState extends ResumableState<MainPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               InkWell(
-                                onTap:() async {
+                                onTap: () async {
                                   var result = await Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => ProfilePage()));
+                                      .push(MaterialPageRoute(
+                                      builder: (context) => ProfilePage()));
 
-                                  if(result != null){
+                                  if (result != null) {
                                     getImageUrlInStorage();
                                   }
                                 },
                                 child: CircleAvatar(
-                                    backgroundImage: _user.imageUrl  != null ? NetworkImage(_user.imageUrl) : AssetImage('assets/default_user.jpg'),
+                                    backgroundImage: _user.imageUrl != null
+                                        ? NetworkImage(_user.imageUrl)
+                                        : AssetImage('assets/default_user.jpg'),
                                     radius: 20.0
                                 ),
                               ),
                               Center(
-                                child: Switch(
-                                  value: isSwitched,
-                                  onChanged: (value){
-                                    setState(() {
-                                      isSwitched=value;
-                                      onlineStatus(value);
-                                    });
-                                  },
-                                  activeTrackColor: Colors.lightGreenAccent,
-                                  activeColor: Colors.green,
-                                  inactiveTrackColor: Colors.red,
-                                )
+                                  child: Switch(
+                                    value: isSwitched,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isSwitched = value;
+                                        onlineStatus(value);
+                                      });
+                                    },
+                                    activeTrackColor: Colors.lightGreenAccent,
+                                    activeColor: Colors.green,
+                                    inactiveTrackColor: Colors.red,
+                                  )
                               )
                             ],
                           ),
@@ -732,18 +788,20 @@ class _MainPageState extends ResumableState<MainPage> {
                         ),
                         SizedBox(height: 15),
                         Padding(
-                          padding: const EdgeInsets.only(left:15.0, right: 15.0),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, right: 15.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
                                 color: Colors.white,
-                                height:105,
+                                height: 105,
                                 width: 180,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       SizedBox(height: 10,),
                                       Text(
@@ -765,18 +823,20 @@ class _MainPageState extends ResumableState<MainPage> {
                                       ),
                                       SizedBox(height: 10),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .end,
                                         children: [
                                           Container(
                                             width: 80,
                                             height: 30.0,
                                             child: Container(
                                               child: Material(
-                                                borderRadius: BorderRadius.circular(5.0),
+                                                borderRadius: BorderRadius
+                                                    .circular(5.0),
                                                 color: Colors.deepPurple,
                                                 elevation: 7.0,
                                                 child: InkWell(
-                                                  onTap: ()  {
+                                                  onTap: () {
                                                     // _validateAndMakeRequest();
                                                     _fundWallet(context);
                                                     /*Navigator.of(context)
@@ -789,7 +849,8 @@ class _MainPageState extends ResumableState<MainPage> {
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontFamily: 'Varela',
-                                                          fontWeight: FontWeight.normal
+                                                          fontWeight: FontWeight
+                                                              .normal
                                                       ),
                                                     ),
                                                   ),
@@ -806,12 +867,13 @@ class _MainPageState extends ResumableState<MainPage> {
                               SizedBox(width: 20),
                               Container(
                                 color: Colors.white,
-                                height:105,
+                                height: 105,
                                 width: 180,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       SizedBox(height: 10,),
                                       Text(
@@ -833,18 +895,20 @@ class _MainPageState extends ResumableState<MainPage> {
                                       ),
                                       SizedBox(height: 10),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .end,
                                         children: [
                                           Container(
                                             width: 80,
                                             height: 30.0,
                                             child: Container(
                                               child: Material(
-                                                borderRadius: BorderRadius.circular(5.0),
+                                                borderRadius: BorderRadius
+                                                    .circular(5.0),
                                                 color: Colors.deepPurple,
                                                 elevation: 7.0,
                                                 child: InkWell(
-                                                  onTap: ()  {
+                                                  onTap: () {
                                                     // _validateAndMakeRequest();
                                                     _showDialog();
                                                   },
@@ -854,7 +918,8 @@ class _MainPageState extends ResumableState<MainPage> {
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontFamily: 'Varela',
-                                                          fontWeight: FontWeight.normal
+                                                          fontWeight: FontWeight
+                                                              .normal
                                                       ),
                                                     ),
                                                   ),
@@ -873,14 +938,17 @@ class _MainPageState extends ResumableState<MainPage> {
                         ),
                         SizedBox(height: 25),
                         Padding(
-                          padding: const EdgeInsets.only(left:15.0, right: 15.0),
+                          padding: const EdgeInsets.only(
+                              left: 15.0, right: 15.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               InkWell(
-                                onTap: (){
+                                onTap: () {
                                   Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => paymentHistoryPage()));
+                                      .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          paymentHistoryPage()));
                                 },
                                 child: Container(
                                   height: 40.0,
@@ -896,7 +964,8 @@ class _MainPageState extends ResumableState<MainPage> {
                                         borderRadius: BorderRadius.circular(8.0)
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center,
                                       children: <Widget>[
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -914,9 +983,10 @@ class _MainPageState extends ResumableState<MainPage> {
                                 ),
                               ),
                               InkWell(
-                                onTap: (){
+                                onTap: () {
                                   Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => MyBookingsPage()));
+                                      .push(MaterialPageRoute(
+                                      builder: (context) => MyBookingsPage()));
                                 },
                                 child: Container(
                                   height: 40.0,
@@ -932,7 +1002,8 @@ class _MainPageState extends ResumableState<MainPage> {
                                         borderRadius: BorderRadius.circular(8.0)
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center,
                                       children: <Widget>[
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -1028,12 +1099,11 @@ class _MainPageState extends ResumableState<MainPage> {
     });
   }
 
-   _withdraw(BuildContext context) async{
-
-     if (!await DataConnectionChecker().hasConnection) {
-       _logger.d('No internet access!');
-       return;
-     }
+  _withdraw(BuildContext context) async {
+    if (!await DataConnectionChecker().hasConnection) {
+      _logger.d('No internet access!');
+      return;
+    }
 
     var _map = Map<String, dynamic>();
     _map['id'] = _user.id.toString();
@@ -1042,13 +1112,12 @@ class _MainPageState extends ResumableState<MainPage> {
     _loader.showLoader();
     _withdrawState.withdraw(url: null, body: _map).then((value) {
       _loader.hideLoader();
-
     }).catchError((err) {
       _loader.hideLoader();
       _logger.d('Error: $err');
     });
-
   }
+
   void _showDialog() {
     // flutter defined function
     showDialog(
@@ -1071,7 +1140,8 @@ class _MainPageState extends ResumableState<MainPage> {
               },
             ),
             new FlatButton(
-              child: new Text("Withdraw",style: TextStyle(color: Colors.green),),
+              child: new Text(
+                "Withdraw", style: TextStyle(color: Colors.green),),
               onPressed: () {
                 _withdraw(context);
                 Navigator.of(context).pop();
@@ -1093,9 +1163,11 @@ class _MainPageState extends ResumableState<MainPage> {
     });
   }
 
-  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async{
+  static Future<dynamic> myBackgroundMessageHandler(
+      Map<String, dynamic> message) async {
     print('on background $message');
     return Future<void>.value();
-
   }
+
+
 }

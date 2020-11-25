@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:local_auth/auth_strings.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'package:salonspabarber/helper/base_url.dart';
 import 'package:salonspabarber/helper/custom_widget.dart';
@@ -31,7 +33,15 @@ class AcceptRequest extends StatefulWidget {
   String clientName;
   String clientAddress;
   String clientPhone;
-  AcceptRequest(this.notificationData, this.clientImgUrl, this.clientName, this.clientAddress, this.clientPhone);
+  String clientLatitude;
+  String clientLongitude;
+  AcceptRequest(this.notificationData,
+      this.clientImgUrl,
+      this.clientName,
+      this.clientAddress,
+      this.clientPhone,
+      this.clientLatitude,
+      this.clientLongitude);
 
   @override
   _AcceptRequestState createState() => _AcceptRequestState();
@@ -43,7 +53,7 @@ class _AcceptRequestState extends State<AcceptRequest> {
   final Logger _logger = Logger();
   GoogleMapController mapController;
   double _originLatitude = 6.5212402, _originLongitude = 3.3679965;
-  double _destLatitude = 6.849660, _destLongitude = 3.648190;
+ // double _destLatitude = widget.clientLatitude, _destLongitude = 3.648190;
   Map<MarkerId, Marker> markers = {};
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
@@ -57,18 +67,22 @@ class _AcceptRequestState extends State<AcceptRequest> {
   final _preManager = SharedPreferencesHelper();
   String clientId;
   String requestKey;
+  bool isFingerPrintLockUp;
 
 
   @override
   void initState() {
 
+    isFingerPrintLockUp = false;
     /// origin marker
     _addMarker(LatLng(_originLatitude, _originLongitude), "origin",
         BitmapDescriptor.defaultMarker);
 
     /// destination marker
-    _addMarker(LatLng(_destLatitude, _destLongitude), "destination",
+    _addMarker(LatLng(double.parse(widget.clientLatitude), double.parse(widget.clientLongitude)), "destination",
         BitmapDescriptor.defaultMarkerWithHue(90));
+
+    print("client location => ${widget.clientLongitude} - ${widget.clientLatitude}");
     _getPolyline();
     dosomething();
     super.initState();
@@ -135,6 +149,7 @@ class _AcceptRequestState extends State<AcceptRequest> {
       _notificationModel = widget.notificationData.fromMap(event.snapshot.value);
       if (_notificationModel.requestStatus == 'ACCEPTED') {
        // _timer2.cancel();
+        _requestFingerPrint();
         return;
       }
 
@@ -192,6 +207,17 @@ class _AcceptRequestState extends State<AcceptRequest> {
   }
 
 
+  enableScreenLock(){
+    setState(() {
+      isFingerPrintLockUp = true;
+    });
+  }
+
+  disableScreenLock(){
+    setState(() {
+      isFingerPrintLockUp = false;
+    });
+  }
 
 
   @override
@@ -199,67 +225,70 @@ class _AcceptRequestState extends State<AcceptRequest> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-          body: Stack(
-            children: [
-              GoogleMap(
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(_originLatitude, _originLongitude), zoom: 15),
-                myLocationEnabled: true,
-                tiltGesturesEnabled: true,
-                compassEnabled: true,
-                scrollGesturesEnabled: true,
-                zoomGesturesEnabled: true,
-                onMapCreated: _onMapCreated,
-                markers: Set<Marker>.of(markers.values),
-                polylines: Set<Polyline>.of(polylines.values),
-              ),
-              
-              StreamBuilder(
-                  stream: _database
-                  .child('Requests')
-                  .child(clientId)
-                  .child(requestKey)
-                  .onValue,
-                  builder: (context, snapshot){
-                    if(snapshot.hasError){
+          body: AbsorbPointer(
+            absorbing: isFingerPrintLockUp,
+            child: Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(double.parse(widget.clientLatitude),double.parse(widget.clientLongitude)), zoom: 15),
+                  myLocationEnabled: true,
+                  tiltGesturesEnabled: true,
+                  compassEnabled: true,
+                  scrollGesturesEnabled: true,
+                  zoomGesturesEnabled: true,
+                  onMapCreated: _onMapCreated,
+                  markers: Set<Marker>.of(markers.values),
+                  polylines: Set<Polyline>.of(polylines.values),
+                ),
+
+                StreamBuilder(
+                    stream: _database
+                    .child('Requests')
+                    .child(clientId)
+                    .child(requestKey)
+                    .onValue,
+                    builder: (context, snapshot){
+                      if(snapshot.hasError){
+                        return Container();
+                      }
+
+                      print('notification stattus => ${widget.notificationData.requestStatus}');
+                      if(snapshot.hasData && !snapshot.hasError &&
+                      snapshot.data.snapshot.value != null){
+                        _notificationModel = widget.notificationData.fromMap(snapshot.data.snapshot.value);
+
+                        if(_notificationModel.requestStatus == "ACCEPTED"){
+                          return _acceptedRequestWidget(_notificationModel,
+                              showArrivalButton: false);
+                        }
+
+                        if(_notificationModel.requestStatus == "BARBER_ARRIVED"){
+                          return _barberArrivedWidget(_notificationModel, showStartService: false);
+                        }
+
+                        if(_notificationModel.requestStatus == "SERVICE_ONGOING"){
+                          //_startTimer(24);
+                          return _serviceCompletedWidget(_notificationModel);
+                        }
+
+                        if(_notificationModel.requestStatus == "AWAITING_COMPLETION"){
+                          return _serviceCompletedWidget(_notificationModel);
+
+                          //_timer.cancel();
+                          //customSnackBar(_scaffoldKey, "Waiting for client to confirm");
+                        }
+
+                        if(_notificationModel.requestStatus == "CANCELLED"){
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) => MainPage()));
+                        }
+                      }
                       return Container();
-                    }
-
-                    print('notification stattus => ${widget.notificationData.requestStatus}');
-                    if(snapshot.hasData && !snapshot.hasError &&
-                    snapshot.data.snapshot.value != null){
-                      _notificationModel = widget.notificationData.fromMap(snapshot.data.snapshot.value);
-
-                      if(_notificationModel.requestStatus == "ACCEPTED"){
-                        return _acceptedRequestWidget(_notificationModel,
-                            showArrivalButton: false);
-                      }
-
-                      if(_notificationModel.requestStatus == "BARBER_ARRIVED"){
-                        return _barberArrivedWidget(_notificationModel, showStartService: false);
-                      }
-
-                      if(_notificationModel.requestStatus == "SERVICE_ONGOING"){
-                        //_startTimer(24);
-                        return _serviceCompletedWidget(_notificationModel);
-                      }
-
-                      if(_notificationModel.requestStatus == "AWAITING_COMPLETION"){
-                        return _serviceCompletedWidget(_notificationModel);
-
-                        //_timer.cancel();
-                        //customSnackBar(_scaffoldKey, "Waiting for client to confirm");
-                      }
-
-                      if(_notificationModel.requestStatus == "CANCELLED"){
-                        Navigator.of(context).popUntil((route) => route.isFirst);
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) => MainPage()));
-                      }
-                    }
-                    return Container();
-              })
-            ],
+                })
+              ],
+            ),
           )),
     );
   }
@@ -287,7 +316,7 @@ class _AcceptRequestState extends State<AcceptRequest> {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         StringRes.MAP_API_KEY,
         PointLatLng(_originLatitude, _originLongitude),
-        PointLatLng(_destLatitude, _destLongitude),
+        PointLatLng(double.parse(widget.clientLatitude), double.parse(widget.clientLongitude)),
         travelMode: TravelMode.driving,
         wayPoints: [PolylineWayPoint(location: "Sabo, Yaba Lagos Nigeria")]
     );
@@ -798,4 +827,86 @@ class _AcceptRequestState extends State<AcceptRequest> {
           ],
         ));
   }
+
+  Timer _timer2;
+  int _start2 = 00;
+  int _minute2 = 1;
+  //int _minute = 20;
+
+  /// starts background timeout=====log user out when timer completes
+  void _requestFingerPrint() {
+    const oneSec = const Duration(seconds: 1);
+    setState(() => _start2 = 9);
+    _timer2 = new Timer.periodic(
+      oneSec,
+          (Timer timer) => setState(
+            () {
+          if (_start2 == 0) {
+            if (_minute <= 2 && _minute > 0) {
+              _minute2 = _minute2 - 1;
+              _requestFingerPrint();
+            } else {
+              print('canceling request');
+              _timer2.cancel();
+              _checkBiometric();
+              enableScreenLock();
+            }
+//            timer.cancel();
+          } else {
+            _start2 = _start2 - 1;
+            print('Timer: $_start2');
+          }
+        },
+      ),
+    );
+  }
+
+  void _checkBiometric() async {
+    // check for biometric availability
+    final LocalAuthentication auth = LocalAuthentication();
+    bool canCheckBiometrics = false;
+    try {
+      canCheckBiometrics = await auth.canCheckBiometrics;
+    } catch (e) {
+      print("error biome trics $e");
+    }
+
+    print("biometric is available: $canCheckBiometrics");
+
+    // enumerate biometric technologies
+    List<BiometricType> availableBiometrics;
+    try {
+      availableBiometrics = await auth.getAvailableBiometrics();
+    } catch (e) {
+      print("error enumerate biometrics $e");
+    }
+
+    print("following biometrics are available");
+    if (availableBiometrics.isNotEmpty) {
+      availableBiometrics.forEach((ab) {
+        print("\ttech: $ab");
+      });
+    } else {
+      print("no biometrics are available");
+    }
+
+    // authenticate with biometrics
+    bool authenticated = false;
+    try {
+      authenticated = await auth.authenticateWithBiometrics(
+          localizedReason: 'Touch your finger on the sensor to login',
+          useErrorDialogs: true,
+          stickyAuth: true,
+          androidAuthStrings:
+          AndroidAuthMessages(signInTitle: "Login to HomePage"));
+    } catch (e) {
+      print("error using biometric auth: $e");
+    }
+    setState(() {
+      //  isAuth = authenticated ? true : false;
+    });
+    disableScreenLock();
+    print("authenticated: $authenticated");
+  }
+
 }

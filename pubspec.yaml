@@ -51,6 +51,7 @@ dependencies:
   flutter_polyline_points: ^0.2.4
   fluttertoast: ^7.1.1
   need_resume: ^1.0.5+1
+  local_auth: ^0.6.2+3
 
 
 
