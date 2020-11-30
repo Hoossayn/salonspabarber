@@ -225,8 +225,10 @@ class _AcceptRequestState extends State<AcceptRequest> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-          body: AbsorbPointer(
-            absorbing: isFingerPrintLockUp,
+          body: IgnorePointer(
+            key:  _scaffoldKey,
+            ignoring: isFingerPrintLockUp,
+            ignoringSemantics: true,
             child: Stack(
               children: [
                 GoogleMap(
@@ -894,11 +896,11 @@ class _AcceptRequestState extends State<AcceptRequest> {
     bool authenticated = false;
     try {
       authenticated = await auth.authenticateWithBiometrics(
-          localizedReason: 'Touch your finger on the sensor to login',
+          localizedReason: 'Touch your finger on the sensor to continue',
           useErrorDialogs: true,
           stickyAuth: true,
           androidAuthStrings:
-          AndroidAuthMessages(signInTitle: "Login to HomePage"));
+          AndroidAuthMessages(signInTitle: "Authenticate"));
     } catch (e) {
       print("error using biometric auth: $e");
     }

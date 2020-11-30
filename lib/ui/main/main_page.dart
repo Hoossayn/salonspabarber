@@ -32,6 +32,7 @@ import 'package:salonspabarber/ui/main/state/main_state.dart';
 import 'package:salonspabarber/ui/main/withdrawal/state/withdraw_state.dart';
 import 'package:salonspabarber/ui/paymentHistory/paymentHistoryPage.dart';
 import 'package:salonspabarber/ui/profile/profile_page.dart';
+import 'package:salonspabarber/utilities/colors.dart';
 import 'package:salonspabarber/utilities/custom_loader_indicator.dart';
 import 'package:salonspabarber/utilities/image_loader.dart';
 import 'funding/state/funding_state.dart';
@@ -558,6 +559,7 @@ class _MainPageState extends ResumableState<MainPage> {
                       InkWell(
                         onTap: () {
                           _acceptRequest();
+                          Navigator.pop(context);
                         },
                         child: Container(
                           height: 40.0,
@@ -736,7 +738,7 @@ class _MainPageState extends ResumableState<MainPage> {
                 Expanded(
                   flex: 3,
                   child: Container(
-                    color: Colors.deepPurple,
+                    color: salonPurple,
                     child: Column(
                       children: [
                         Padding(
@@ -833,7 +835,7 @@ class _MainPageState extends ResumableState<MainPage> {
                                               child: Material(
                                                 borderRadius: BorderRadius
                                                     .circular(5.0),
-                                                color: Colors.deepPurple,
+                                                color: salonPurple,
                                                 elevation: 7.0,
                                                 child: InkWell(
                                                   onTap: () {
@@ -905,7 +907,7 @@ class _MainPageState extends ResumableState<MainPage> {
                                               child: Material(
                                                 borderRadius: BorderRadius
                                                     .circular(5.0),
-                                                color: Colors.deepPurple,
+                                                color: salonPurple,
                                                 elevation: 7.0,
                                                 child: InkWell(
                                                   onTap: () {

@@ -3,11 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:salonspabarber/helper/base_url.dart';
 import 'package:salonspabarber/helper/pref_manager.dart';
 import 'package:salonspabarber/helper/validation.dart';
 import 'package:salonspabarber/ui/login/state/login_state.dart';
 import 'package:salonspabarber/ui/main/main_page.dart';
+import 'package:salonspabarber/utilities/colors.dart';
 import 'package:salonspabarber/utilities/custom_loader_indicator.dart';
+import 'package:salonspabarber/utilities/image_loader.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -54,11 +57,16 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: true,
       key: _scaffoldKey,
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(image: new AssetImage(StringRes.barbing)),
+          color: salonPurple,
+
+        ),
         child: Padding(
           padding: const EdgeInsets.all(28.0),
           child: Column(
             children: [
-              SizedBox(height: 50),
+              SizedBox(height: 80),
               _emailField(),
               SizedBox(height: 30),
               _passwordField(),
@@ -106,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
         keyboardType: TextInputType.text,
         style: style,
         controller: _emailController,
-        cursorColor: Colors.black,
+        cursorColor: Colors.white,
         decoration: new InputDecoration(
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -116,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
             borderSide: BorderSide(width: 1, color: Colors.grey),
           ),
-          labelText: "Email Address",
+          labelText: "Phone Number",
           labelStyle: TextStyle(color: Colors.grey,fontFamily: 'Varela',
           ),
           border: new OutlineInputBorder(
@@ -142,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
         style: style,
 
         controller: _passwordController,
-        cursorColor: Colors.black,
+        cursorColor: Colors.white,
         decoration: new InputDecoration(
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),

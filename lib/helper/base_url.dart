@@ -33,6 +33,7 @@ class StringRes{
   static final String ACCEPT_ICON = 'assets/svgs/arrived.svg';
   static final String referrer = 'assets/svgs/friend.svg';
   static final String complaints = 'assets/svgs/complain.svg';
+  static final String barbing = 'assets/svgs/ic_barbing.svg';
 
 
 }

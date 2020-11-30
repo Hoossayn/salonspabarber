@@ -12,11 +12,12 @@ import 'package:salonspabarber/ui/paymentHistory/earningHistory/state/earning_st
 import 'package:salonspabarber/ui/paymentHistory/walletHistory/state/wallet_state.dart';
 import 'package:salonspabarber/ui/profile/state/prof_state.dart';
 import 'package:salonspabarber/ui/splash.dart';
+import 'package:salonspabarber/utilities/colors.dart';
 
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: Colors.deepPurple));
+      SystemUiOverlayStyle(statusBarColor: salonPurple));
   runApp(MyApp());
 }
 

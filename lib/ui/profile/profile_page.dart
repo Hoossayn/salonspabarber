@@ -13,6 +13,7 @@ import 'package:salonspabarber/entity/User.dart';
 import 'package:salonspabarber/helper/custom_widget.dart';
 import 'package:salonspabarber/helper/pref_manager.dart';
 import 'package:salonspabarber/ui/profile/state/prof_state.dart';
+import 'package:salonspabarber/utilities/colors.dart';
 import 'package:salonspabarber/utilities/custom_loader_indicator.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -91,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: salonPurple,
         title: Text('Profile'),
         leading: IconButton(
             icon: new Icon(Icons.arrow_back),
@@ -159,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 child: Material(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.deepPurple,
+                  color: salonPurple,
                   elevation: 7.0,
                   child: InkWell(
                     onTap: ()  {
